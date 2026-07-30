@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Детали лота — tenge.gg</title>
+<meta name="description" content="Купить донат или аккаунт с гарантией tenge.gg через Kaspi QR.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Inter:wght@400;500;600;700&family=Noto+Serif+JP:wght@600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL='https://axtptzceicyhnmnopaaa.supabase.co';
+const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4dHB0emNlaWN5aG5tbm9wYWFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ5NzY0NDAsImV4cCI6MjEwMDU1MjQ0MH0.9YRi27aam540EOqjz_kzwf9bjseMOOCdpydS3-O5b58';
+try{window.sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);}catch(e){window.sb=null;}
+</script>
+<style>
+:root{--ink:#141414;--muted:#6b6b6b;--line:#e8e6e1;--paper:#fdfcfa;--red:#c0392b;--green:#1a7f4b}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font-family:'Inter',sans-serif;font-size:14px;line-height:1.65;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:'Playfair Display',serif;letter-spacing:-0.02em;line-height:1.1}
+::selection{background:#141414;color:#fff}
+.wrap{max-width:1160px;margin:0 auto;padding:0 24px}
+
+header{position:sticky;top:0;z-index:100;background:rgba(253,252,250,.88);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-bottom:1px solid var(--line)}
+.nav{display:flex;align-items:center;gap:14px;max-width:1160px;margin:0 auto;padding:16px 24px}
+.logo{display:flex;align-items:center;gap:11px;text-decoration:none;color:var(--ink)}
+.logo-mark{width:38px;height:38px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display';font-weight:700;font-size:18px;color:#fff;background:var(--ink)}
+.logo-name{font-family:'Playfair Display';font-weight:700;font-size:21px}
+.logo-name span{color:var(--red)}
+.nav-links{display:flex;gap:24px;margin-left:26px}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:13px;font-weight:500;transition:color .2s}
+.nav-links a:hover,.nav-links a.active{color:var(--ink)}
+.back{margin-left:auto;color:var(--muted);text-decoration:none;font-size:13px;transition:.2s}
+.back:hover{color:var(--ink)}
+
+.layout{display:grid;grid-template-columns:1.2fr .8fr;gap:36px;padding:40px 0 90px}
+.main-card{background:#fff;border:1px solid var(--line);border-radius:24px;padding:32px}
+.game-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:100px;background:#f4f2ed;font-size:12px;font-weight:600;color:var(--ink);margin-bottom:14px}
+.item-title{font-size:clamp(24px,3.5vw,36px);font-weight:700;color:var(--ink)}
+.item-desc{color:var(--muted);margin-top:12px;font-size:15px;line-height:1.7}
+
+.features{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:28px 0;padding:20px;border-radius:18px;background:#faf8f5;border:1px solid var(--line)}
+.feat-item{font-size:13px;color:var(--ink);display:flex;align-items:center;gap:8px}
+.feat-item .ic{color:var(--green);font-weight:700}
+
+.seller-card{padding:22px;border-radius:20px;background:#fff;border:1px solid var(--line);margin-top:24px}
+.seller-head{display:flex;align-items:center;gap:14px}
+.seller-ava{width:48px;height:48px;border-radius:50%;background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:center;font:700 18px 'Playfair Display'}
+.seller-name{font:700 17px 'Playfair Display';color:var(--ink)}
+.seller-sub{font-size:12px;color:var(--muted);margin-top:2px}
+.seller-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px;padding-top:16px;border-top:1px solid var(--line);text-align:center}
+.sstat .num{font:700 18px 'Playfair Display';color:var(--ink)}
+.sstat .lbl{font-size:11px;color:var(--muted)}
+
+/* side buy box */
+.buy-panel{position:sticky;top:90px;background:#fff;border:1px solid var(--line);border-radius:24px;padding:28px;box-shadow:0 20px 50px rgba(0,0,0,.06)}
+.buy-price{font:700 36px 'Playfair Display';color:var(--ink)}
+.buy-price-sub{font-size:12px;color:var(--muted);margin-top:2px}
+
+.form-group{margin:20px 0}
+.form-group label{display:block;font-size:12px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.form-group input{width:100%;padding:14px 16px;border-radius:12px;border:1px solid var(--line);background:var(--paper);font:500 14px 'Inter';outline:none;transition:.25s}
+.form-group input:focus{border-color:var(--ink)}
+
+.btn-buy{width:100%;padding:16px;border-radius:100px;border:none;cursor:pointer;font:600 15px 'Inter';color:#fff;background:var(--ink);transition:.3s}
+.btn-buy:hover{background:#000;transform:translateY(-2px);box-shadow:0 12px 28px rgba(0,0,0,.2)}
+
+.guarantee{margin-top:18px;display:flex;align-items:center;gap:10px;font-size:12px;color:var(--green);background:#eef7f0;padding:12px 16px;border-radius:14px}
+
+/* modal */
+.modal-bg{position:fixed;inset:0;z-index:200;background:rgba(20,20,20,.6);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:20px}
+.modal-bg.open{display:flex;animation:fIn .25s}
+@keyframes fIn{from{opacity:0}to{opacity:1}}
+.modal{width:100%;max-width:420px;background:#fff;border-radius:24px;padding:28px;box-shadow:0 30px 80px rgba(0,0,0,.2)}
+.m-title{font-size:22px;margin-bottom:16px}
+.m-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px}
+.m-total{display:flex;justify-content:space-between;align-items:center;margin-top:14px;padding-top:10px;font:700 22px 'Playfair Display'}
+.qr-placeholder{margin:20px auto 10px;width:180px;height:180px;background:#f4f2ed;border:2px dashed var(--ink);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:42px}
+.btn-m-confirm{width:100%;margin-top:18px;padding:14px;border-radius:100px;border:none;background:var(--ink);color:#fff;font:600 14px 'Inter';cursor:pointer;transition:.25s}
+.btn-m-confirm:hover{background:#000}
+.btn-m-close{width:100%;margin-top:8px;padding:10px;border-radius:100px;border:none;background:transparent;color:var(--muted);font:500 13px 'Inter';cursor:pointer}
+
+@media(max-width:850px){.layout{grid-template-columns:1fr}.buy-panel{position:static}.nav-links{display:none}}
+</style>
+</head>
+<body>
+
+<header>
+  <nav class="nav">
+    <a href="./index.html" class="logo"><div class="logo-mark">₸</div><div class="logo-name">tenge<span>.gg</span></div></a>
+    <div class="nav-links">
+      <a href="./index.html">Главная</a>
+      <a href="./catalog.html">Каталог</a>
+      <a href="./sell.html">Продать</a>
+      <a href="./profile.html">Профиль</a>
+    </div>
+    <a href="./catalog.html" class="back">← Вернуться в каталог</a>
+  </nav>
+</header>
+
+<div class="wrap">
+  <div class="layout">
+    <div>
+      <div class="main-card">
+        <div class="game-badge" id="gBadge">🎮 PUBG Mobile</div>
+        <h1 class="item-title" id="iTitle">PUBG Mobile — 660 UC (Мгновенно по ID)</h1>
+        <p class="item-desc" id="iDesc">Официальное пополнение UC по вашему Player ID. Безопасно, без входа на аккаунт. Доставка от 1 до 5 минут после оплаты.</p>
+
+        <div class="features">
+          <div class="feat-item"><span class="ic">✓</span> Доставка по Player ID</div>
+          <div class="feat-item"><span class="ic">✓</span> Гарантия возврата 100%</div>
+          <div class="feat-item"><span class="ic">✓</span> Честная комиссия 5%</div>
+          <div class="feat-item"><span class="ic">✓</span> Видео-защита сделки</div>
+        </div>
+      </div>
+
+      <!-- Информация о продавце -->
+      <div class="seller-card">
+        <div class="seller-head">
+          <div class="seller-ava" id="sAva">D</div>
+          <div>
+            <div class="seller-name" id="sName">DarkSide_KZ</div>
+            <div class="seller-sub">Продавец на tenge.gg · На сайте 1 год</div>
+          </div>
+        </div>
+        <div class="seller-stats">
+          <div class="sstat"><div class="num" id="sRating">★ 4.98</div><div class="lbl">Рейтинг</div></div>
+          <div class="sstat"><div class="num" id="sDeals">1,243</div><div class="lbl">Сделок</div></div>
+          <div class="sstat"><div class="num" style="color:var(--green)">~3 мин</div><div class="lbl">Время ответа</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Правая панель покупки -->
+    <div>
+      <div class="buy-panel">
+        <div class="buy-price" id="iPrice">4 400 ₸</div>
+        <div class="buy-price-sub">Комиссия сервиса (5% = 220 ₸) уже включена</div>
+
+        <div class="form-group">
+          <label>Твой Player ID / Никнейм</label>
+          <input type="text" id="gameId" placeholder="Например: 512938471" required>
+        </div>
+
+        <button class="btn-buy" id="btnBuy">Оплатить через Kaspi QR →</button>
+
+        <div class="guarantee">
+          <span style="font-size:18px">🛡️</span>
+          <span>Деньги будут заморожены (Escrow) до подтверждения получения.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Модалка оплаты -->
+<div class="modal-bg" id="buyModal">
+  <div class="modal">
+    <h2 class="m-title">Оплата Kaspi QR</h2>
+    <div class="m-row"><span>Лот</span><span id="mLot">PUBG Mobile 660 UC</span></div>
+    <div class="m-row"><span>Player ID</span><span id="mId">-</span></div>
+    <div class="m-row"><span>Комиссия 5%</span><span id="mFee">220 ₸</span></div>
+    <div class="m-total"><span>Итого</span><span id="mTotal">4 620 ₸</span></div>
+
+    <div class="qr-placeholder">📲</div>
+
+    <button class="btn-m-confirm" id="btnConfirm">✓ Я оплатил через Kaspi</button>
+    <button class="btn-m-close" id="btnClose">Отмена</button>
+  </div>
+</div>
+
+<script>
+const urlParams = new URLSearchParams(window.location.search);
+const lotId = urlParams.get('id') || '1';
+
+const DEMO_ITEMS = {
+  '1': {title:'PUBG Mobile — 660 UC', game:'PUBG Mobile', price:4400, seller:'DarkSide_KZ', rating:'4.98', deals:'1,243', desc:'Официальное пополнение UC по вашему Player ID. Безопасно, без входа на аккаунт. Доставка от 1 до 5 минут после оплаты.'},
+  '2': {title:'Free Fire — 1080 Алмазов', game:'Free Fire', price:3900, seller:'FF_Shymkent', rating:'4.99', deals:'2,104', desc:'Мгновенное зачисление алмазов по Free Fire ID. Самый выгодный курс в КЗ.'},
+  '3': {title:'Mobile Legends — 565 Алмазов', game:'Mobile Legends', price:4200, seller:'MLBB_Almaty', rating:'4.97', deals:'1,876', desc:'Зачисление по User ID + Zone ID. Все чеки предоставляем.'}
+};
+
+const item = DEMO_ITEMS[lotId] || DEMO_ITEMS['1'];
+
+document.getElementById('iTitle').textContent = item.title;
+document.getElementById('gBadge').textContent = '🎮 ' + item.game;
+document.getElementById('iPrice').textContent = item.price.toLocaleString('ru-RU') + ' ₸';
+document.getElementById('sName').textContent = item.seller;
+document.getElementById('sRating').textContent = '★ ' + item.rating;
+document.getElementById('sDeals').textContent = item.deals;
+document.getElementById('sAva').textContent = item.seller[0];
+document.getElementById('iDesc').textContent = item.desc;
+
+const modal = document.getElementById('buyModal');
+const gameIdInput = document.getElementById('gameId');
+
+document.getElementById('btnBuy').onclick = () => {
+  const idVal = gameIdInput.value.trim();
+  if(!idVal) {
+    alert('Пожалуйста, введи твой Player ID или никнейм!');
+    gameIdInput.focus();
+    return;
+  }
+  const fee = Math.round(item.price * 0.05);
+  document.getElementById('mLot').textContent = item.title;
+  document.getElementById('mId').textContent = idVal;
+  document.getElementById('mFee').textContent = fee.toLocaleString('ru-RU') + ' ₸';
+  document.getElementById('mTotal').textContent = (item.price + fee).toLocaleString('ru-RU') + ' ₸';
+  modal.classList.add('open');
+};
+
+document.getElementById('btnClose').onclick = () => modal.classList.remove('open');
+
+document.getElementById('btnConfirm').onclick = async () => {
+  const fee = Math.round(item.price * 0.05);
+  const order = {
+    id: 'TG-' + Math.floor(1000 + Math.random() * 9000),
+    title: item.title,
+    seller: item.seller,
+    price: item.price + fee,
+    status: 'FUNDS_HOLD',
+    stage: 1,
+    ts: Date.now()
+  };
+  const orders = JSON.parse(localStorage.getItem('tenge_orders') || '[]');
+  orders.unshift(order);
+  localStorage.setItem('tenge_orders', JSON.stringify(orders));
+
+  if (window.sb) {
+    try {
+      await sb.from('orders').insert([{
+        status: 'FUNDS_HOLD',
+        escrow_amount: item.price + fee,
+        fee_amount: fee
+      }]);
+    } catch(e) { console.warn(e); }
+  }
+
+  alert('Оплата зафиксирована! Переходим в личный кабинет к сделке.');
+  window.location.href = './profile.html';
+};
+</script>
+</body>
+</html>
