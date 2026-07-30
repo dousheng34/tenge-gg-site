@@ -351,6 +351,128 @@ dSend.onclick=()=>{
 };
 
 render('buys');
+
+/* ============ LIVE TRADE CHAT ============ */
+(function(){
+  const css=`
+  .chat-bg{position:fixed;inset:0;z-index:300;background:rgba(3,4,6,.72);backdrop-filter:blur(10px);display:none;align-items:flex-end;justify-content:center;padding:0}
+  .chat-bg.open{display:flex}
+  .chat-win{width:100%;max-width:520px;height:88vh;background:rgba(14,17,24,.97);border:1px solid rgba(255,255,255,.14);border-radius:24px 24px 0 0;display:flex;flex-direction:column;animation:chUp .38s cubic-bezier(.2,.9,.3,1.1);overflow:hidden}
+  @keyframes chUp{from{transform:translateY(60px);opacity:0}to{transform:none;opacity:1}}
+  .ch-head{padding:16px 20px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:12px;flex-shrink:0}
+  .ch-ava{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#4FACFE,#8B5CF6);display:flex;align-items:center;justify-content:center;font:700 15px 'Space Grotesk';color:#fff;flex-shrink:0;position:relative}
+  .ch-ava::after{content:'';position:absolute;bottom:0;right:0;width:10px;height:10px;border-radius:50%;background:#34d399;border:2px solid #0e1118}
+  .ch-name{font:600 14px 'Space Grotesk';color:#fff}
+  .ch-sub{font-size:11px;color:#8A93A6}
+  .ch-x{margin-left:auto;width:34px;height:34px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:transparent;color:#8A93A6;cursor:pointer;font-size:15px}
+  .ch-x:hover{color:#fff;border-color:rgba(0,242,254,.5)}
+  .ch-warn{margin:12px 16px 0;padding:11px 14px;border-radius:12px;background:rgba(255,90,90,.07);border:1px solid rgba(255,90,90,.24);font-size:11px;line-height:1.5;color:#ffb4b4;flex-shrink:0}
+  .ch-body{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px}
+  .ch-body::-webkit-scrollbar{width:6px}.ch-body::-webkit-scrollbar-thumb{background:#1a2230;border-radius:6px}
+  .bub{max-width:78%;padding:11px 15px;border-radius:16px;font-size:13.5px;line-height:1.5;word-break:break-word}
+  .bub .t{display:block;font-size:9.5px;opacity:.55;margin-top:5px;letter-spacing:.04em}
+  .bub.me{align-self:flex-end;background:linear-gradient(135deg,#00F2FE,#4FACFE);color:#060709;border-bottom-right-radius:5px}
+  .bub.them{align-self:flex-start;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:#E7EAF0;border-bottom-left-radius:5px}
+  .bub.sys{align-self:center;max-width:92%;text-align:center;background:rgba(0,242,254,.07);border:1px solid rgba(0,242,254,.24);color:#9be9f0;font-size:11.5px;padding:9px 14px;border-radius:100px}
+  .ch-foot{padding:12px 14px;border-top:1px solid rgba(255,255,255,.08);display:flex;gap:9px;flex-shrink:0}
+  .ch-in{flex:1;padding:13px 16px;border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);color:#fff;font:500 13.5px 'Inter';outline:none}
+  .ch-in:focus{border-color:rgba(0,242,254,.6)}
+  .ch-send{padding:0 20px;border-radius:14px;border:none;cursor:pointer;font:700 13px 'Space Grotesk';color:#060709;background:linear-gradient(135deg,#00F2FE,#4FACFE);box-shadow:0 0 16px rgba(0,242,254,.35)}
+  .btn-chat{padding:10px 20px;border-radius:11px;cursor:pointer;font:700 12px 'Space Grotesk';color:#00F2FE;background:rgba(0,242,254,.07);border:1px solid rgba(0,242,254,.3);transition:.25s}
+  .btn-chat:hover{background:rgba(0,242,254,.15)}
+  `;
+  const st=document.createElement('style');st.textContent=css;document.head.appendChild(st);
+
+  document.body.insertAdjacentHTML('beforeend',`
+  <div class="chat-bg" id="chatBg"><div class="chat-win">
+    <div class="ch-head">
+      <div class="ch-ava" id="chAva">D</div>
+      <div><div class="ch-name" id="chName">Продавец</div><div class="ch-sub" id="chSub">Чат сделки</div></div>
+      <button class="ch-x" id="chX">✕</button>
+    </div>
+    <div class="ch-warn">🛡 Не уходите в другие мессенджеры. Все данные передавайте только здесь — переписка сохраняется и служит доказательством в арбитраже.</div>
+    <div class="ch-body" id="chBody"></div>
+    <div class="ch-foot">
+      <input class="ch-in" id="chIn" placeholder="Сообщение...">
+      <button class="ch-send" id="chSend">→</button>
+    </div>
+  </div></div>`);
+
+  let curId=null;
+  const key=id=>'tenge_chat_'+id;
+  const now=()=>new Date().toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'});
+
+  function seed(o){
+    return [
+      {r:'sys',t:'Заказ #'+o.id+' создан. Средства заморожены (escrow).'},
+      {r:'them',t:'Здравствуйте! Вижу оплату по заказу '+o.id+'. Напишите ваш игровой ID — отправлю в течение 5 минут.',ts:now()},
+      {r:'sys',t:'⏳ У продавца 24 часа на передачу данных'}
+    ];
+  }
+  function load(o){
+    let m=JSON.parse(localStorage.getItem(key(o.id))||'null');
+    if(!m){m=seed(o);localStorage.setItem(key(o.id),JSON.stringify(m))}
+    return m;
+  }
+  function draw(m){
+    document.getElementById('chBody').innerHTML=m.map(x=>
+      x.r==='sys'?`<div class="bub sys">${x.t}</div>`
+      :`<div class="bub ${x.r==='me'?'me':'them'}">${x.t}<span class="t">${x.ts||''}</span></div>`).join('');
+    const b=document.getElementById('chBody');b.scrollTop=b.scrollHeight;
+  }
+  window.openChat=function(id){
+    const o=(typeof ORDERS!=='undefined'?ORDERS:[]).find(x=>x.id===id)||{id:id,seller:'Продавец',title:''};
+    curId=o.id;
+    document.getElementById('chName').textContent=o.seller||'Продавец';
+    document.getElementById('chAva').textContent=(o.seller||'P')[0];
+    document.getElementById('chSub').textContent='Заказ #'+o.id+(o.title?' · '+o.title:'');
+    draw(load(o));
+    document.getElementById('chatBg').classList.add('open');
+    document.body.style.overflow='hidden';
+  };
+  function close(){document.getElementById('chatBg').classList.remove('open');document.body.style.overflow=''}
+  document.getElementById('chX').onclick=close;
+  document.getElementById('chatBg').addEventListener('click',e=>{if(e.target.id==='chatBg')close()});
+
+  function send(){
+    const i=document.getElementById('chIn');const v=i.value.trim();if(!v||!curId)return;
+    const m=JSON.parse(localStorage.getItem(key(curId))||'[]');
+    m.push({r:'me',t:v,ts:now()});
+    localStorage.setItem(key(curId),JSON.stringify(m));
+    i.value='';draw(m);
+    setTimeout(()=>{
+      const m2=JSON.parse(localStorage.getItem(key(curId))||'[]');
+      const reply=/\d{5,}/.test(v)
+        ? 'Принял ID! Отправляю прямо сейчас, запишите видео получения 🎥'
+        : 'Хорошо, понял вас. Оставайтесь на связи.';
+      m2.push({r:'them',t:reply,ts:now()});
+      if(/\d{5,}/.test(v))m2.push({r:'sys',t:'✅ Продавец подтвердил передачу. Проверьте товар и нажмите «Подтвердить получение».'});
+      localStorage.setItem(key(curId),JSON.stringify(m2));draw(m2);
+    },1400);
+  }
+  document.getElementById('chSend').onclick=send;
+  document.getElementById('chIn').addEventListener('keydown',e=>{if(e.key==='Enter')send()});
+
+  /* кнопка «Чат сделки» на всех активных заказах */
+  function addBtns(){
+    document.querySelectorAll('#content .order').forEach(card=>{
+      if(card.querySelector('.btn-chat'))return;
+      const tag=card.querySelector('.st-tag');
+      if(!tag||/ЗАВЕРШЕНО|АКТИВЕН/.test(tag.textContent))return;
+      const idm=card.querySelector('.o-sub')?.textContent.match(/#(TG-\d+)/);
+      if(!idm)return;
+      let act=card.querySelector('.o-actions');
+      if(!act){act=document.createElement('div');act.className='o-actions';card.appendChild(act)}
+      const b=document.createElement('button');
+      b.className='btn-chat';b.textContent='💬 Чат сделки';
+      b.onclick=()=>openChat(idm[1]);
+      act.prepend(b);
+    });
+  }
+  const mo=new MutationObserver(addBtns);
+  mo.observe(document.getElementById('content'),{childList:true,subtree:true});
+  addBtns();
+})();
 </script>
 </body>
 </html>
