@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Арбитраж — tenge.gg admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL='https://axtptzceicyhnmnopaaa.supabase.co';
+const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4dHB0emNlaWN5aG5tbm9wYWFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ5NzY0NDAsImV4cCI6MjEwMDU1MjQ0MH0.9YRi27aam540EOqjz_kzwf9bjseMOOCdpydS3-O5b58';
+try{window.sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);}catch(e){window.sb=null;console.warn('supabase init:',e)}
+</script>
+<style>
+:root{--bg:#060709;--glass:rgba(255,255,255,.03);--glass-border:rgba(255,255,255,.1);--cyan:#00F2FE;--blue:#4FACFE;--violet:#8B5CF6;--text:#E7EAF0;--muted:#8A93A6;--green:#34d399;--red:#ff6b6b;--gold:#e8c46a}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:'Space Grotesk',sans-serif;letter-spacing:-0.03em}
+::selection{background:rgba(0,242,254,.3)}
+::-webkit-scrollbar{width:9px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:#1a2230;border-radius:8px}
+.bg-fx{position:fixed;inset:0;z-index:0;pointer-events:none}
+.bg-fx::before{content:'';position:absolute;inset:0;background:linear-gradient(rgba(0,242,254,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,242,254,.03) 1px,transparent 1px);background-size:48px 48px;mask-image:radial-gradient(ellipse 90% 60% at 50% 0%,#000 30%,transparent 100%)}
+.grad-text{background:linear-gradient(135deg,#00F2FE 0%,#4FACFE 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
+.glass{background:var(--glass);border:1px solid var(--glass-border);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-radius:18px}
+
+header{position:sticky;top:0;z-index:100;background:rgba(6,7,9,.75);backdrop-filter:blur(24px);border-bottom:1px solid rgba(255,255,255,.06)}
+.nav{display:flex;align-items:center;gap:14px;max-width:1280px;margin:0 auto;padding:13px 20px}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:#fff}
+.logo-mark{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;font:700 19px 'Space Grotesk';color:#060709;background:linear-gradient(135deg,#00F2FE,#4FACFE);box-shadow:0 0 22px rgba(0,242,254,.45)}
+.logo-name{font:700 20px 'Space Grotesk'}
+.logo-name span{color:var(--cyan)}
+.admin-tag{font:700 10px 'Space Grotesk';letter-spacing:.1em;padding:4px 12px;border-radius:100px;background:rgba(255,107,107,.12);color:var(--red);border:1px solid rgba(255,107,107,.35)}
+.nav-links{display:flex;gap:24px;margin-left:26px}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:13px;font-weight:500;transition:color .2s}
+.nav-links a:hover{color:var(--cyan)}
+
+.wrap{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:32px 20px 90px}
+.page-title{font-size:clamp(26px,3.5vw,36px);color:#fff}
+.page-sub{color:var(--muted);margin-top:6px}
+
+/* login gate */
+.gate{max-width:380px;margin:80px auto;padding:30px;text-align:center}
+.gate input{width:100%;margin-top:16px;padding:14px 16px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.03);color:#fff;font:500 14px 'Inter';outline:none;text-align:center}
+.gate input:focus{border-color:rgba(0,242,254,.6)}
+.gate button{width:100%;margin-top:14px;padding:14px;border-radius:12px;border:none;cursor:pointer;font:700 14px 'Space Grotesk';color:#060709;background:linear-gradient(135deg,#00F2FE,#4FACFE);box-shadow:0 0 20px rgba(0,242,254,.4)}
+.gate .err{display:none;margin-top:10px;color:var(--red);font-size:12px}
+
+/* stats */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin:26px 0}
+.stat{padding:20px;text-align:center}
+.stat .n{font:700 30px 'Space Grotesk';letter-spacing:-0.02em}
+.stat .l{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.14em;margin-top:4px}
+.stat.red .n{color:var(--red)}
+.stat.green .n{color:var(--green)}
+
+/* tabs */
+.tabs{display:flex;gap:8px;margin:8px 0 20px;flex-wrap:wrap}
+.tab{padding:11px 22px;border-radius:100px;cursor:pointer;font:600 13px 'Space Grotesk';color:var(--muted);background:var(--glass);border:1px solid var(--glass-border);transition:.25s}
+.tab:hover{color:#fff;border-color:rgba(0,242,254,.4)}
+.tab.active{color:#060709;background:linear-gradient(135deg,#00F2FE,#4FACFE);border-color:transparent;box-shadow:0 0 18px rgba(0,242,254,.4)}
+
+/* rows */
+.row{padding:18px 20px;margin-bottom:12px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.row .main{flex:1;min-width:200px}
+.row .t{font:600 14px 'Space Grotesk';color:#fff}
+.row .s{font-size:11.5px;color:var(--muted);margin-top:2px}
+.st-tag{display:inline-block;font:700 10px 'Space Grotesk';letter-spacing:.06em;padding:4px 12px;border-radius:100px;white-space:nowrap}
+.st-hold{background:rgba(0,242,254,.1);color:var(--cyan);border:1px solid rgba(0,242,254,.3)}
+.st-done{background:rgba(52,211,153,.1);color:var(--green);border:1px solid rgba(52,211,153,.3)}
+.st-dispute{background:rgba(255,107,107,.12);color:var(--red);border:1px solid rgba(255,107,107,.35)}
+.st-refund{background:rgba(232,196,106,.12);color:var(--gold);border:1px solid rgba(232,196,106,.35)}
+.amt{font:700 16px 'Space Grotesk';white-space:nowrap}
+.act{display:flex;gap:8px}
+.btn-a{padding:9px 16px;border-radius:10px;cursor:pointer;font:700 11px 'Space Grotesk';transition:.2s;border:1px solid}
+.btn-buyer{color:var(--gold);background:rgba(232,196,106,.08);border-color:rgba(232,196,106,.35)}
+.btn-buyer:hover{background:rgba(232,196,106,.18)}
+.btn-seller{color:var(--green);background:rgba(52,211,153,.08);border-color:rgba(52,211,153,.35)}
+.btn-seller:hover{background:rgba(52,211,153,.18)}
+.empty{text-align:center;padding:50px 20px;color:var(--muted)}
+.empty .big{font-size:38px;margin-bottom:10px}
+.refresh{margin-left:auto;padding:9px 18px;border-radius:10px;cursor:pointer;font:600 12px 'Inter';color:var(--muted);background:var(--glass);border:1px solid var(--glass-border);transition:.2s}
+.refresh:hover{color:var(--cyan);border-color:rgba(0,242,254,.4)}
+.head-row{display:flex;align-items:center;gap:14px;margin:26px 0 8px;flex-wrap:wrap}
+.head-row h2{font-size:20px;color:#fff}
+@media(max-width:700px){.nav-links{display:none}}
+</style>
+</head>
+<body>
+<div class="bg-fx"></div>
+
+<header>
+  <nav class="nav">
+    <a href="./index.html" class="logo"><div class="logo-mark">₸</div><div class="logo-name">tenge<span>.gg</span></a>
+    <span class="admin-tag">ADMIN · АРБИТРАЖ</span>
+    <div class="nav-links">
+      <a href="./catalog.html">Каталог</a>
+      <a href="./sell.html">Продать</a>
+      <a href="./profile.html">Профиль</a>
+    </div>
+  </nav>
+</header>
+
+<!-- LOGIN GATE -->
+<div class="wrap" id="gateWrap">
+  <div class="gate glass">
+    <div style="font-size:36px">⚖️</div>
+    <h1 style="font-size:22px;color:#fff;margin-top:12px">Панель арбитра</h1>
+    <p style="color:var(--muted);font-size:12px;margin-top:6px">Доступ только для команды tenge.gg</p>
+    <input type="password" id="gatePass" placeholder="Пароль арбитра">
+    <button onclick="tryLogin()">Войти →</button>
+    <div class="err" id="gateErr">Неверный пароль</div>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div class="wrap" id="adminWrap" style="display:none">
+  <h1 class="page-title">Панель <span class="grad-text">арбитра</span></h1>
+  <p class="page-sub">Споры, сделки и заявки — в реальном времени из Supabase</p>
+
+  <div class="stats" id="stats"></div>
+
+  <div class="tabs">
+    <button class="tab active" data-tab="disputes">🚨 Споры</button>
+    <button class="tab" data-tab="orders">💰 Сделки</button>
+    <button class="tab" data-tab="leads">📝 Заявки</button>
+  </div>
+
+  <div class="head-row">
+    <h2 id="secTitle">Открытые споры</h2>
+    <button class="refresh" onclick="loadAll()">↻ Обновить</button>
+  </div>
+  <div id="content"></div>
+</div>
+
+<script>
+const ADMIN_PASS='tenge2026'; // смени на свой
+const fmt=n=>Number(n).toLocaleString('ru-RU')+' ₸';
+const STATUS={
+ FUNDS_HOLD:['st-hold','FUNDS_HOLD'],
+ DATA_TRANSFERRED:['st-hold','ПЕРЕДАЧА'],
+ COMPLETED:['st-done','ЗАВЕРШЕНО'],
+ DISPUTE:['st-dispute','СПОР'],
+ REFUNDED:['st-refund','ВОЗВРАТ'],
+};
+
+function tryLogin(){
+  if(document.getElementById('gatePass').value===ADMIN_PASS){
+    document.getElementById('gateWrap').style.display='none';
+    document.getElementById('adminWrap').style.display='block';
+    loadAll();
+  }else{
+    document.getElementById('gateErr').style.display='block';
+  }
+}
+document.getElementById('gatePass').addEventListener('keydown',e=>{if(e.key==='Enter')tryLogin()});
+
+let DB={orders:[],leads:[],listings:[]};
+let tab='disputes';
+
+async function loadAll(){
+  if(!window.sb){document.getElementById('content').innerHTML='<div class="empty glass"><div class="big">⚠️</div>Supabase не подключён</div>';return}
+  const [o,l,ls]=await Promise.all([
+    sb.from('orders').select('*').order('created_at',{ascending:false}),
+    sb.from('early_leads').select('*').order('created_at',{ascending:false}),
+    sb.from('listings').select('*').order('created_at',{ascending:false}),
+  ]);
+  DB.orders=o.data||[];DB.leads=l.data||[];DB.listings=ls.data||[];
+  renderStats();render();
+}
+
+function renderStats(){
+  const disputes=DB.orders.filter(x=>x.status==='DISPUTE').length;
+  const hold=DB.orders.filter(x=>x.status==='FUNDS_HOLD').length;
+  const volume=DB.orders.reduce((s,x)=>s+Number(x.escrow_amount||0),0);
+  document.getElementById('stats').innerHTML=`
+   <div class="stat glass"><div class="n grad-text">${DB.listings.length}</div><div class="l">Лотов</div></div>
+   <div class="stat glass"><div class="n grad-text">${DB.orders.length}</div><div class="l">Сделок</div></div>
+   <div class="stat glass red"><div class="n">${disputes}</div><div class="l">Споров</div></div>
+   <div class="stat glass"><div class="n" style="color:var(--cyan)">${hold}</div><div class="l">В escrow</div></div>
+   <div class="stat glass"><div class="n grad-text">${DB.leads.length}</div><div class="l">Заявок</div></div>
+   <div class="stat glass green"><div class="n">${fmt(volume)}</div><div class="l">Оборот</div></div>`;
+}
+
+function render(){
+  const c=document.getElementById('content');
+  const title=document.getElementById('secTitle');
+  if(tab==='disputes'){
+    title.textContent='Открытые споры';
+    const list=DB.orders.filter(x=>x.status==='DISPUTE');
+    c.innerHTML=list.length?list.map(o=>`
+     <div class="row glass">
+       <div class="main">
+         <div class="t">Заказ #${String(o.id).slice(0,8)}</div>
+         <div class="s">${new Date(o.created_at).toLocaleString('ru-RU')} · escrow ${fmt(o.escrow_amount)} · комиссия ${fmt(o.fee_amount)}</div>
+       </div>
+       <span class="st-tag st-dispute">СПОР</span>
+       <div class="act">
+         <button class="btn-a btn-buyer" onclick="resolve('${o.id}','REFUNDED')">← Покупателю</button>
+         <button class="btn-a btn-seller" onclick="resolve('${o.id}','COMPLETED')">Продавцу →</button>
+       </div>
+     </div>`).join(''):
+     '<div class="empty glass"><div class="big">🌕</div>Споров нет. Всё чисто.</div>';
+  }else if(tab==='orders'){
+    title.textContent='Все сделки';
+    c.innerHTML=DB.orders.length?DB.orders.map(o=>{
+      const st=STATUS[o.status]||['st-hold',o.status];
+      return `<div class="row glass">
+       <div class="main">
+         <div class="t">Заказ #${String(o.id).slice(0,8)}</div>
+         <div class="s">${new Date(o.created_at).toLocaleString('ru-RU')}</div>
+       </div>
+       <span class="amt grad-text">${fmt(o.escrow_amount)}</span>
+       <span class="st-tag ${st[0]}">${st[1]}</span>
+     </div>`}).join(''):
+     '<div class="empty glass"><div class="big">💰</div>Сделок пока нет</div>';
+  }else{
+    title.textContent='Заявки раннего доступа';
+    c.innerHTML=DB.leads.length?DB.leads.map(l=>`
+     <div class="row glass">
+       <div class="main">
+         <div class="t">${l.contact}</div>
+         <div class="s">${new Date(l.created_at).toLocaleString('ru-RU')}</div>
+       </div>
+       <span class="st-tag ${l.role==='seller'?'st-refund':'st-hold'}">${l.role==='seller'?'ПРОДАВЕЦ':'ПОКУПАТЕЛЬ'}</span>
+     </div>`).join(''):
+     '<div class="empty glass"><div class="big">📝</div>Заявок пока нет</div>';
+  }
+}
+
+async function resolve(id,status){
+  const {error}=await sb.from('orders').update({status}).eq('id',id);
+  if(error){alert('Ошибка: '+error.message);return}
+  await loadAll();
+}
+
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active');
+  tab=t.dataset.tab;
+  render();
+});
+</script>
+</body>
+</html>

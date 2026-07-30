@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Продать — tenge.gg</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#060709;--glass:rgba(255,255,255,.03);--glass-border:rgba(255,255,255,.1);--cyan:#00F2FE;--blue:#4FACFE;--violet:#8B5CF6;--text:#E7EAF0;--muted:#8A93A6;--green:#34d399}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:'Space Grotesk',sans-serif;letter-spacing:-0.03em}
+::selection{background:rgba(0,242,254,.3)}
+::-webkit-scrollbar{width:9px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:#1a2230;border-radius:8px}
+.bg-fx{position:fixed;inset:0;z-index:0;pointer-events:none}
+.bg-fx::before{content:'';position:absolute;inset:0;background:linear-gradient(rgba(0,242,254,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,242,254,.03) 1px,transparent 1px);background-size:48px 48px;mask-image:radial-gradient(ellipse 90% 60% at 50% 0%,#000 30%,transparent 100%)}
+.orb{position:absolute;border-radius:50%;filter:blur(120px)}
+.orb-1{width:500px;height:500px;top:-180px;left:30%;background:rgba(0,242,254,.08)}
+.grad-text{background:linear-gradient(135deg,#00F2FE 0%,#4FACFE 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
+.glass{background:var(--glass);border:1px solid var(--glass-border);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-radius:18px}
+
+header{position:sticky;top:0;z-index:100;background:rgba(6,7,9,.75);backdrop-filter:blur(24px);border-bottom:1px solid rgba(255,255,255,.06)}
+.nav{display:flex;align-items:center;gap:14px;max-width:1280px;margin:0 auto;padding:13px 20px}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:#fff}
+.logo-mark{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;font:700 19px 'Space Grotesk';color:#060709;background:linear-gradient(135deg,#00F2FE,#4FACFE);box-shadow:0 0 22px rgba(0,242,254,.45)}
+.logo-name{font:700 20px 'Space Grotesk'}
+.logo-name span{color:var(--cyan)}
+.nav-links{display:flex;gap:24px;margin-left:26px}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:13px;font-weight:500;transition:color .2s}
+.nav-links a:hover,.nav-links a.active{color:var(--cyan)}
+.back{margin-left:auto;color:var(--muted);text-decoration:none;font-size:13px;transition:.2s}
+.back:hover{color:var(--cyan)}
+
+.wrap{position:relative;z-index:1;max-width:1080px;margin:0 auto;padding:36px 20px 90px}
+.page-title{font-size:clamp(26px,3.5vw,38px);color:#fff}
+.page-sub{color:var(--muted);margin-top:6px}
+
+/* steps indicator */
+.steps-bar{display:flex;gap:10px;margin:30px 0 26px;flex-wrap:wrap}
+.step-pill{display:flex;align-items:center;gap:9px;padding:9px 17px;border-radius:100px;background:var(--glass);border:1px solid var(--glass-border);font:600 12px 'Space Grotesk';color:var(--muted);transition:.3s}
+.step-pill .num{width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;transition:.3s}
+.step-pill.active{border-color:rgba(0,242,254,.5);color:#fff;box-shadow:0 0 18px rgba(0,242,254,.15)}
+.step-pill.active .num{background:linear-gradient(135deg,#00F2FE,#4FACFE);color:#060709}
+.step-pill.done{border-color:rgba(52,211,153,.4);color:var(--green)}
+.step-pill.done .num{background:var(--green);color:#060709}
+
+.layout{display:grid;grid-template-columns:1.15fr .85fr;gap:22px;align-items:start}
+.panel{padding:26px}
+.step{display:none}
+.step.active{display:block;animation:fadeUp .4s cubic-bezier(.2,.8,.3,1)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.step h2{font-size:19px;color:#fff;margin-bottom:18px}
+
+.pick-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+.pick{padding:16px 12px;border-radius:14px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.09);cursor:pointer;text-align:center;transition:.25s;user-select:none}
+.pick:hover{border-color:rgba(0,242,254,.4);transform:translateY(-2px)}
+.pick.sel{border-color:var(--cyan);background:rgba(0,242,254,.07);box-shadow:0 0 18px rgba(0,242,254,.2)}
+.pick .ic{font-size:26px}
+.pick .nm{font:600 12px 'Space Grotesk';color:#fff;margin-top:8px}
+.sub-lbl{font:700 11px 'Space Grotesk';letter-spacing:.2em;text-transform:uppercase;color:var(--cyan);margin:22px 0 12px}
+
+.field{margin-bottom:16px}
+.field label{display:block;font:600 11px 'Space Grotesk';letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.field input,.field textarea{width:100%;padding:13px 15px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.03);color:#fff;font:500 14px 'Inter';outline:none;transition:.25s;resize:vertical}
+.field input:focus,.field textarea:focus{border-color:rgba(0,242,254,.6);box-shadow:0 0 18px rgba(0,242,254,.15)}
+.field input::placeholder,.field textarea::placeholder{color:#525b6e}
+
+.calc-box{margin-top:8px;padding:18px;border-radius:14px;background:rgba(0,242,254,.05);border:1px solid rgba(0,242,254,.2)}
+.calc-row{display:flex;justify-content:space-between;padding:7px 0;font-size:13px}
+.calc-row .k{color:var(--muted)}
+.calc-row .v{font-weight:600;color:#fff}
+.calc-row.total{border-top:1px solid rgba(0,242,254,.2);margin-top:8px;padding-top:13px}
+.calc-row.total .v{font:700 20px 'Space Grotesk'}
+
+.safety{margin-top:22px;padding:18px;border-radius:14px;background:rgba(255,90,90,.05);border:1px solid rgba(255,90,90,.22)}
+.safety .st{font:700 12px 'Space Grotesk';color:#ff9090;display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.chk{display:flex;gap:11px;cursor:pointer;user-select:none;align-items:flex-start}
+.chk input{display:none}
+.chk .box{width:19px;height:19px;border-radius:6px;border:1px solid rgba(255,255,255,.3);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:.2s;font-size:12px;color:#060709;margin-top:1px}
+.chk input:checked+.box{background:linear-gradient(135deg,#00F2FE,#4FACFE);border-color:transparent;box-shadow:0 0 12px rgba(0,242,254,.5)}
+.chk input:checked+.box::after{content:'✓';font-weight:700}
+.chk .txt{font-size:12.5px;color:#ffb4b4;line-height:1.5}
+
+.nav-btns{display:flex;gap:12px;margin-top:26px}
+.btn-next,.btn-back{padding:14px 30px;border-radius:13px;cursor:pointer;font:700 14px 'Space Grotesk';transition:.25s;border:none}
+.btn-next{color:#060709;background:linear-gradient(135deg,#00F2FE,#4FACFE);box-shadow:0 0 20px rgba(0,242,254,.35)}
+.btn-next:hover{transform:translateY(-2px);box-shadow:0 0 34px rgba(0,242,254,.6)}
+.btn-next:disabled{opacity:.35;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-back{color:var(--muted);background:transparent;border:1px solid rgba(255,255,255,.14)}
+.btn-back:hover{color:#fff;border-color:rgba(255,255,255,.35)}
+.btn-publish{flex:1;padding:16px;border-radius:14px;border:none;cursor:pointer;font:700 16px 'Space Grotesk';color:#060709;background:linear-gradient(135deg,#00F2FE,#4FACFE);box-shadow:0 0 26px rgba(0,242,254,.45);transition:.25s}
+.btn-publish:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 0 44px rgba(0,242,254,.7)}
+.btn-publish:disabled{opacity:.35;cursor:not-allowed}
+
+/* live preview */
+.preview{position:sticky;top:86px;padding:22px}
+.pv-title{font:700 11px 'Space Grotesk';letter-spacing:.22em;text-transform:uppercase;color:var(--cyan);margin-bottom:16px}
+.lot-card{padding:18px;border-radius:16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.1);display:flex;flex-direction:column;gap:12px}
+.lot-top{display:flex;gap:12px;align-items:flex-start}
+.lot-badge{width:46px;height:46px;border-radius:13px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:22px;background:rgba(0,242,254,.08);border:1px solid rgba(255,255,255,.1)}
+.lot-title{font:600 15px 'Space Grotesk';color:#fff;line-height:1.3}
+.lot-desc{font-size:11.5px;color:var(--muted);margin-top:3px}
+.seller{display:flex;align-items:center;gap:9px;padding:10px 12px;border-radius:12px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06)}
+.s-ava{position:relative;width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#4FACFE,#8B5CF6);display:flex;align-items:center;justify-content:center;font:700 11px 'Space Grotesk';color:#fff}
+.s-ava::after{content:'';position:absolute;bottom:-1px;right:-1px;width:9px;height:9px;border-radius:50%;background:var(--green);border:2px solid var(--bg)}
+.s-name{font:600 12px 'Space Grotesk';color:#fff}
+.s-meta{font-size:10.5px;color:var(--muted)}
+.s-meta b{color:#f5c542}
+.escrow{display:flex;align-items:center;gap:7px;font-size:10.5px;font-weight:600;color:var(--green);padding:7px 11px;border-radius:9px;background:rgba(52,211,153,.07);border:1px solid rgba(52,211,153,.2)}
+.lot-foot{display:flex;align-items:center;justify-content:space-between}
+.price{font:700 20px 'Space Grotesk'}
+.buy{padding:10px 20px;border-radius:12px;border:none;font:700 13px 'Space Grotesk';color:#060709;background:linear-gradient(135deg,#00F2FE,#4FACFE);box-shadow:0 0 16px rgba(0,242,254,.35)}
+
+/* success */
+.success{display:none;text-align:center;padding:50px 20px}
+.success.show{display:block;animation:fadeUp .5s}
+.success .moon-ic{font-size:56px;animation:float 3s ease-in-out infinite}
+@keyframes float{50%{transform:translateY(-10px)}}
+.success h2{font-size:26px;color:#fff;margin:18px 0 8px}
+.success p{color:var(--muted)}
+.success .btn-next{margin-top:26px;text-decoration:none;display:inline-block}
+
+@media(max-width:920px){
+  .layout{grid-template-columns:1fr}
+  .preview{position:static}
+  .nav-links{display:none}
+}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL='https://axtptzceicyhnmnopaaa.supabase.co';
+const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4dHB0emNlaWN5aG5tbm9wYWFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ5NzY0NDAsImV4cCI6MjEwMDU1MjQ0MH0.9YRi27aam540EOqjz_kzwf9bjseMOOCdpydS3-O5b58';
+try{window.sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);}catch(e){window.sb=null;console.warn('supabase init:',e)}
+</script>
+</head>
+<body>
+<div class="bg-fx"><div class="orb orb-1"></div></div>
+
+<header>
+  <nav class="nav">
+    <a href="./index.html" class="logo"><div class="logo-mark">₸</div><div class="logo-name">tenge<span>.gg</span></a>
+    <div class="nav-links">
+      <a href="./catalog.html">Каталог</a>
+      <a href="./sell.html" class="active">Продать</a>
+      <a href="./profile.html">Профиль</a>
+    </div>
+    <a class="back" href="./catalog.html">← Назад в каталог</a>
+  </nav>
+</header>
+
+<div class="wrap">
+  <h1 class="page-title">Новый <span class="grad-text">лот</span></h1>
+  <p class="page-sub">3 шага — и твой товар увидят тысячи геймеров Казахстана</p>
+
+  <div class="steps-bar">
+    <div class="step-pill active" id="pill1"><span class="num">1</span> Игра и категория</div>
+    <div class="step-pill" id="pill2"><span class="num">2</span> Описание</div>
+    <div class="step-pill" id="pill3"><span class="num">3</span> Цена и публикация</div>
+  </div>
+
+  <div class="layout">
+    <div class="panel glass">
+
+      <!-- ШАГ 1 -->
+      <div class="step active" id="step1">
+        <h2>Выбери игру</h2>
+        <div class="pick-grid" id="gamePick"></div>
+        <div class="sub-lbl">Категория</div>
+        <div class="pick-grid" id="catPick" style="grid-template-columns:repeat(3,1fr)"></div>
+        <div class="nav-btns">
+          <button class="btn-next" id="to2" disabled>Далее →</button>
+        </div>
+      </div>
+
+      <!-- ШАГ 2 -->
+      <div class="step" id="step2">
+        <h2>Название и описание</h2>
+        <div class="field">
+          <label>Название лота</label>
+          <input id="fTitle" maxlength="70" placeholder="Например: PUBG Mobile — 660 UC · мгновенно">
+        </div>
+        <div class="field">
+          <label>Описание</label>
+          <textarea id="fDesc" rows="4" maxlength="300" placeholder="Условия доставки, что входит, сроки..."></textarea>
+        </div>
+        <div class="nav-btns">
+          <button class="btn-back" id="back1">← Назад</button>
+          <button class="btn-next" id="to3" disabled>Далее →</button>
+        </div>
+      </div>
+
+      <!-- ШАГ 3 -->
+      <div class="step" id="step3">
+        <h2>Цена и комиссия</h2>
+        <div class="field">
+          <label>Желаемая сумма (₸)</label>
+          <input id="fPrice" type="number" min="100" step="50" placeholder="10000">
+        </div>
+        <div class="calc-box">
+          <div class="calc-row"><span class="k">Цена лота для покупателя</span><span class="v" id="cPrice">— ₸</span></div>
+          <div class="calc-row"><span class="k">Комиссия tenge.gg (5%)</span><span class="v grad-text" id="cFee">— ₸</span></div>
+          <div class="calc-row total"><span class="k">Вы получите на Kaspi</span><span class="v grad-text" id="cGet">— ₸</span></div>
+        </div>
+        <div class="safety">
+          <div class="st">🎥 Чек-лист безопасности</div>
+          <label class="chk">
+            <input type="checkbox" id="fVideo">
+            <span class="box"></span>
+            <span class="txt">Я обязуюсь записать непрерывное видео передачи данных/аккаунта для защиты в арбитраже</span>
+          </label>
+        </div>
+        <div class="nav-btns">
+          <button class="btn-back" id="back2">← Назад</button>
+          <button class="btn-publish" id="publish" disabled>Опубликовать лот 🚀</button>
+        </div>
+      </div>
+
+      <!-- SUCCESS -->
+      <div class="success" id="success">
+        <div class="moon-ic">🌕</div>
+        <h2>Лот опубликован!</h2>
+        <p>Твой товар уже в каталоге. Уведомим о первой покупке.</p>
+        <a class="btn-next" href="./catalog.html">Перейти в каталог →</a>
+      </div>
+    </div>
+
+    <!-- LIVE PREVIEW -->
+    <div class="preview glass">
+      <div class="pv-title">Превью лота</div>
+      <div class="lot-card">
+        <div class="lot-top">
+          <div class="lot-badge" id="pvIcon">🎮</div>
+          <div>
+            <div class="lot-title" id="pvTitle">Название лота</div>
+            <div class="lot-desc" id="pvDesc">Описание появится здесь...</div>
+          </div>
+        </div>
+        <div class="seller">
+          <div class="s-ava">A</div>
+          <div>
+            <div class="s-name">Aseka</div>
+            <div class="s-meta">★ <b>5.00</b> · Основатель</div>
+          </div>
+        </div>
+        <div class="escrow">🛡 Гарантия tenge.gg (Escrow)</div>
+        <div class="lot-foot">
+          <span class="price grad-text" id="pvPrice">— ₸</span>
+          <button class="buy">Купить</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const GAMES=[
+ {id:'pubg',n:'PUBG Mobile',ic:'🔫'},
+ {id:'freefire',n:'Free Fire',ic:'💎'},
+ {id:'mlbb',n:'Mobile Legends',ic:'⚔️'},
+ {id:'genshin',n:'Genshin Impact',ic:'🌠'},
+ {id:'roblox',n:'Roblox',ic:'🧱'},
+];
+const CATS=[
+ {id:'donate',n:'Донат',ic:'⚡'},
+ {id:'accounts',n:'Аккаунт',ic:'👤'},
+ {id:'currency',n:'Валюта',ic:'🪙'},
+];
+let sel={game:null,cat:null};
+const fmt=n=>n.toLocaleString('ru-RU')+' ₸';
+
+function renderPicks(el,items,key){
+  el.innerHTML=items.map(i=>`<div class="pick ${sel[key]===i.id?'sel':''}" data-id="${i.id}"><div class="ic">${i.ic}</div><div class="nm">${i.n}</div></div>`).join('');
+  el.querySelectorAll('.pick').forEach(p=>p.onclick=()=>{
+    sel[key]=p.dataset.id;
+    renderPicks(el,items,key);
+    if(key==='game')document.getElementById('pvIcon').textContent=GAMES.find(g=>g.id===sel.game).ic;
+    document.getElementById('to2').disabled=!(sel.game&&sel.cat);
+  });
+}
+renderPicks(document.getElementById('gamePick'),GAMES,'game');
+renderPicks(document.getElementById('catPick'),CATS,'cat');
+
+/* steps */
+function goStep(n){
+  [1,2,3].forEach(i=>{
+    document.getElementById('step'+i).classList.toggle('active',i===n);
+    const pill=document.getElementById('pill'+i);
+    pill.classList.toggle('active',i===n);
+    pill.classList.toggle('done',i<n);
+  });
+}
+document.getElementById('to2').onclick=()=>goStep(2);
+document.getElementById('back1').onclick=()=>goStep(1);
+document.getElementById('to3').onclick=()=>goStep(3);
+document.getElementById('back2').onclick=()=>goStep(2);
+
+/* step 2 validation + preview */
+const fTitle=document.getElementById('fTitle'),fDesc=document.getElementById('fDesc');
+function updStep2(){
+  document.getElementById('pvTitle').textContent=fTitle.value.trim()||'Название лота';
+  document.getElementById('pvDesc').textContent=fDesc.value.trim()||'Описание появится здесь...';
+  document.getElementById('to3').disabled=fTitle.value.trim().length<5;
+}
+fTitle.addEventListener('input',updStep2);
+fDesc.addEventListener('input',updStep2);
+
+/* step 3 calculator */
+const fPrice=document.getElementById('fPrice'),fVideo=document.getElementById('fVideo');
+function updCalc(){
+  const v=Math.max(0,+fPrice.value||0);
+  const fee=Math.round(v*0.05);
+  document.getElementById('cPrice').textContent=v?fmt(v):'— ₸';
+  document.getElementById('cFee').textContent=v?fmt(fee):'— ₸';
+  document.getElementById('cGet').textContent=v?fmt(v-fee):'— ₸';
+  document.getElementById('pvPrice').textContent=v?fmt(v):'— ₸';
+  document.getElementById('publish').disabled=!(v>=100&&fVideo.checked);
+}
+fPrice.addEventListener('input',updCalc);
+fVideo.addEventListener('change',updCalc);
+
+/* publish */
+document.getElementById('publish').onclick=async()=>{
+  const game=GAMES.find(g=>g.id===sel.game);
+  const lot={
+    id:Date.now(),
+    game:sel.game,
+    cat:sel.cat,
+    icon:game.ic,
+    tint:'rgba(0,242,254,.22)',
+    title:fTitle.value.trim(),
+    desc:fDesc.value.trim(),
+    price:Math.round(+fPrice.value),
+    seller:'Aseka',
+    online:true,
+    rating:5.00,
+    deals:0,
+    ts:Math.floor(Date.now()/1000),
+    mine:true
+  };
+  /* локальная копия */
+  const lots=JSON.parse(localStorage.getItem('tenge_listings')||'[]');
+  lots.push(lot);
+  localStorage.setItem('tenge_listings',JSON.stringify(lots));
+  /* облако: listings */
+  if(window.sb){
+    try{
+      await sb.from('listings').insert([{
+        game_type:lot.game,
+        category:lot.cat,
+        title:lot.title,
+        description:lot.desc,
+        price:lot.price,
+        status:'active'
+      }]);
+    }catch(err){console.warn('supabase listing:',err)}
+  }
+  /* редирект в каталог */
+  location.href='./catalog.html';
+};
+</script>
+</body>
+</html>
