@@ -546,9 +546,9 @@ footer{border-top:1px solid var(--line);padding:66px 0 34px;position:relative;z-
   function loop(){
     cX+=(tX-cX)*.05; cY+=(tY-cY)*.05;
     const sc=window.scrollY;
-    const drift=sc*.45, rot=sc*.035;
-    const scale=Math.max(.55,1-sc*.00055);
-    const fade=Math.max(0,1-sc*.0016);
+    const drift=sc*.82, rot=sc*.03;
+    const scale=Math.max(.42,1-sc*.00062);
+    const fade=sc<560?1:Math.max(0,1-(sc-560)*.0035);
     wrap.style.transform=`translate(${cX}px,${cY+drift}px) rotate(${rot}deg) scale(${scale})`;
     wrap.style.opacity=fade;
     requestAnimationFrame(loop);

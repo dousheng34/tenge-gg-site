@@ -3,476 +3,406 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Профиль — tenge.gg</title>
+<title>Личный кабинет — tenge.gg</title>
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#fdfcfa">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-:root{--bg:#060709;--glass:rgba(255,255,255,.03);--glass-border:rgba(255,255,255,.1);--cyan:#00F2FE;--blue:#4FACFE;--violet:#8B5CF6;--text:#E7EAF0;--muted:#8A93A6;--green:#34d399;--gold:#e8c46a}
-*{margin:0;padding:0;box-sizing:border-box}
-body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
-h1,h2,h3{font-family:'Space Grotesk',sans-serif;letter-spacing:-0.03em}
-::selection{background:rgba(0,242,254,.3)}
-::-webkit-scrollbar{width:9px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:#1a2230;border-radius:8px}
-.bg-fx{position:fixed;inset:0;z-index:0;pointer-events:none}
-.bg-fx::before{content:'';position:absolute;inset:0;background:linear-gradient(rgba(0,242,254,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,242,254,.03) 1px,transparent 1px);background-size:48px 48px;mask-image:radial-gradient(ellipse 90% 60% at 50% 0%,#000 30%,transparent 100%)}
-.orb{position:absolute;border-radius:50%;filter:blur(120px)}
-.orb-1{width:500px;height:500px;top:-180px;left:30%;background:rgba(0,242,254,.08)}
-.grad-text{background:linear-gradient(135deg,#00F2FE 0%,#4FACFE 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
-.glass{background:var(--glass);border:1px solid var(--glass-border);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-radius:18px}
-
-header{position:sticky;top:0;z-index:100;background:rgba(6,7,9,.75);backdrop-filter:blur(24px);border-bottom:1px solid rgba(255,255,255,.06)}
-.nav{display:flex;align-items:center;gap:14px;max-width:1280px;margin:0 auto;padding:13px 20px}
-.logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:#fff}
-.logo-mark{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;font:700 19px 'Space Grotesk';color:#060709;background:linear-gradient(135deg,#00F2FE,#4FACFE);box-shadow:0 0 22px rgba(0,242,254,.45)}
-.logo-name{font:700 20px 'Space Grotesk'}
-.logo-name span{color:var(--cyan)}
-.nav-links{display:flex;gap:24px;margin-left:26px}
-.nav-links a{color:var(--muted);text-decoration:none;font-size:13px;font-weight:500;transition:color .2s}
-.nav-links a:hover,.nav-links a.active{color:var(--cyan)}
-
-.wrap{position:relative;z-index:1;max-width:1080px;margin:0 auto;padding:32px 20px 90px}
-
-/* profile head */
-.p-head{padding:26px;display:flex;align-items:center;gap:20px;flex-wrap:wrap}
-.p-ava{position:relative;width:76px;height:76px;border-radius:50%;background:linear-gradient(135deg,#00F2FE,#8B5CF6);display:flex;align-items:center;justify-content:center;font:700 30px 'Space Grotesk';color:#060709;flex-shrink:0;box-shadow:0 0 30px rgba(0,242,254,.3)}
-.p-ava::after{content:'';position:absolute;bottom:2px;right:2px;width:16px;height:16px;border-radius:50%;background:var(--green);border:3px solid var(--bg);box-shadow:0 0 10px rgba(52,211,153,.8)}
-.p-info h1{font-size:24px;color:#fff;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.founder{font:700 10px 'Space Grotesk';letter-spacing:.08em;padding:4px 12px;border-radius:100px;background:rgba(184,134,11,.15);color:var(--gold);border:1px solid rgba(184,134,11,.4)}
-.p-meta{font-size:12px;color:var(--muted);margin-top:5px}
-.p-meta b{color:#f5c542}
-.p-balance{margin-left:auto;text-align:right}
-.p-balance .lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.14em}
-.p-balance .sum{font:700 30px 'Space Grotesk';letter-spacing:-0.02em}
-.btn-kaspi{margin-top:8px;padding:11px 22px;border-radius:12px;border:none;cursor:pointer;font:700 13px 'Space Grotesk';color:#060709;background:linear-gradient(135deg,#00F2FE,#4FACFE);box-shadow:0 0 18px rgba(0,242,254,.4);transition:.25s}
-.btn-kaspi:hover{transform:translateY(-2px);box-shadow:0 0 32px rgba(0,242,254,.65)}
-
-/* tabs */
-.tabs{display:flex;gap:8px;margin:26px 0 20px;flex-wrap:wrap}
-.tab{padding:11px 22px;border-radius:100px;cursor:pointer;font:600 13px 'Space Grotesk';color:var(--muted);background:var(--glass);border:1px solid var(--glass-border);transition:.25s}
-.tab:hover{color:#fff;border-color:rgba(0,242,254,.4)}
-.tab.active{color:#060709;background:linear-gradient(135deg,#00F2FE,#4FACFE);border-color:transparent;box-shadow:0 0 18px rgba(0,242,254,.4)}
-.tab .cnt{margin-left:6px;font-size:11px;opacity:.75}
-
-/* order cards */
-.order{padding:20px;margin-bottom:14px}
-.o-head{display:flex;align-items:flex-start;gap:13px;flex-wrap:wrap}
-.o-ic{width:44px;height:44px;border-radius:12px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:20px;background:rgba(0,242,254,.08);border:1px solid rgba(255,255,255,.1)}
-.o-title{font:600 15px 'Space Grotesk';color:#fff}
-.o-sub{font-size:11.5px;color:var(--muted);margin-top:2px}
-.o-price{margin-left:auto;text-align:right}
-.o-price .p{font:700 18px 'Space Grotesk'}
-.o-price .st-tag{display:inline-block;margin-top:4px;font:700 10px 'Space Grotesk';letter-spacing:.06em;padding:3px 10px;border-radius:100px}
-.st-hold{background:rgba(0,242,254,.1);color:var(--cyan);border:1px solid rgba(0,242,254,.3)}
-.st-done{background:rgba(52,211,153,.1);color:var(--green);border:1px solid rgba(52,211,153,.3)}
-.st-dispute{background:rgba(255,90,90,.1);color:#ff9090;border:1px solid rgba(255,90,90,.3)}
-.st-wait{background:rgba(245,197,66,.1);color:#f5c542;border:1px solid rgba(245,197,66,.3)}
-
-/* stepper */
-.stepper{display:flex;align-items:center;margin:18px 0 6px;overflow-x:auto;padding-bottom:4px}
-.stp{display:flex;flex-direction:column;align-items:center;gap:7px;min-width:86px;flex-shrink:0}
-.stp .dot{width:26px;height:26px;border-radius:50%;border:2px solid rgba(255,255,255,.15);background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--muted);transition:.3s}
-.stp .lb{font-size:10px;color:var(--muted);text-align:center;line-height:1.3;max-width:90px}
-.stp.done .dot{border-color:var(--green);background:var(--green);color:#060709;box-shadow:0 0 12px rgba(52,211,153,.5)}
-.stp.done .lb{color:var(--green)}
-.stp.now .dot{border-color:var(--cyan);color:var(--cyan);box-shadow:0 0 14px rgba(0,242,254,.5);animation:pulse 1.6s infinite}
-.stp.now .lb{color:var(--cyan);font-weight:600}
-@keyframes pulse{50%{box-shadow:0 0 24px rgba(0,242,254,.8)}}
-.stp-line{flex:1;height:2px;min-width:20px;background:rgba(255,255,255,.1);margin:0 4px 22px}
-.stp-line.done{background:var(--green)}
-
-.o-actions{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
-.btn-dispute{padding:10px 20px;border-radius:11px;cursor:pointer;font:700 12px 'Space Grotesk';color:#ff9090;background:rgba(255,90,90,.07);border:1px solid rgba(255,90,90,.3);transition:.25s}
-.btn-dispute:hover{background:rgba(255,90,90,.14);box-shadow:0 0 16px rgba(255,90,90,.2)}
-.btn-ok{padding:10px 20px;border-radius:11px;cursor:pointer;font:700 12px 'Space Grotesk';color:var(--green);background:rgba(52,211,153,.07);border:1px solid rgba(52,211,153,.3);transition:.25s}
-.btn-ok:hover{background:rgba(52,211,153,.14)}
-
-.empty{text-align:center;padding:56px 20px;color:var(--muted)}
-.empty .big{font-size:42px;margin-bottom:12px}
-
-/* dispute modal */
-.modal-bg{position:fixed;inset:0;z-index:200;background:rgba(3,4,6,.7);backdrop-filter:blur(10px);display:none;align-items:center;justify-content:center;padding:18px}
-.modal-bg.open{display:flex;animation:fadeIn .25s ease}
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}
-.modal{width:100%;max-width:440px;padding:26px;border-radius:24px;background:rgba(14,17,24,.92);border:1px solid rgba(255,90,90,.25);backdrop-filter:blur(28px);box-shadow:0 40px 100px rgba(0,0,0,.7);animation:mUp .35s cubic-bezier(.2,.9,.3,1.15)}
-@keyframes mUp{from{opacity:0;transform:translateY(24px) scale(.97)}to{opacity:1;transform:none}}
-.modal h2{font-size:19px;color:#fff;display:flex;align-items:center;gap:9px}
-.modal .sub{font-size:12px;color:var(--muted);margin:8px 0 18px}
-.drop{border:2px dashed rgba(255,90,90,.35);border-radius:16px;padding:34px 20px;text-align:center;cursor:pointer;transition:.25s}
-.drop:hover{border-color:#ff9090;background:rgba(255,90,90,.04)}
-.drop .ic{font-size:32px}
-.drop .t{font:600 13px 'Space Grotesk';color:#fff;margin-top:10px}
-.drop .s{font-size:11px;color:var(--muted);margin-top:4px}
-.file-ok{display:none;margin-top:14px;padding:12px 14px;border-radius:12px;background:rgba(52,211,153,.07);border:1px solid rgba(52,211,153,.3);font-size:12px;color:var(--green)}
-.m-reason{width:100%;margin-top:14px;padding:13px 15px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.03);color:#fff;font:500 13px 'Inter';outline:none;resize:vertical}
-.m-reason:focus{border-color:rgba(255,90,90,.5)}
-.m-btns{display:flex;gap:10px;margin-top:20px}
-.m-send{flex:1;padding:14px;border-radius:13px;border:none;cursor:pointer;font:700 14px 'Space Grotesk';color:#fff;background:linear-gradient(135deg,#e74c3c,#c0392b);box-shadow:0 0 20px rgba(231,76,60,.35);transition:.25s}
-.m-send:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 0 34px rgba(231,76,60,.55)}
-.m-send:disabled{opacity:.35;cursor:not-allowed}
-.m-close{padding:14px 20px;border-radius:13px;cursor:pointer;font:600 13px 'Inter';color:var(--muted);background:transparent;border:1px solid rgba(255,255,255,.14)}
-.m-close:hover{color:#fff}
-
-@media(max-width:700px){
-  .p-balance{margin-left:0;text-align:left;width:100%}
-  .nav-links{display:none}
-}
-</style>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,600&family=Inter:wght@400;500;600;700&family=Noto+Serif+JP:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./style.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const SUPABASE_URL='https://axtptzceicyhnmnopaaa.supabase.co';
 const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4dHB0emNlaWN5aG5tbm9wYWFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ5NzY0NDAsImV4cCI6MjEwMDU1MjQ0MH0.9YRi27aam540EOqjz_kzwf9bjseMOOCdpydS3-O5b58';
-try{window.sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);}catch(e){window.sb=null;console.warn('supabase init:',e)}
+try{window.sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);}catch(e){window.sb=null;}
 </script>
+<style>
+/* ==== АНИМАЦИЯ СТРАНИЦЫ: концентрические круги-волны ==== */
+.ripple{position:fixed;border-radius:50%;border:1px solid rgba(18,16,14,.05);pointer-events:none;z-index:0;
+  top:12%;right:-14%;width:640px;height:640px}
+.ripple::before,.ripple::after{content:'';position:absolute;border-radius:50%;border:1px solid rgba(184,50,39,.06)}
+.ripple::before{inset:70px;animation:rp 9s ease-in-out infinite}
+.ripple::after{inset:150px;animation:rp 9s 1.5s ease-in-out infinite}
+@keyframes rp{0%,100%{transform:scale(1);opacity:.7}50%{transform:scale(1.1);opacity:.25}}
+
+/* шапка профиля */
+.phead{background:#fff;border:1px solid var(--line);border-radius:34px;padding:clamp(26px,4vw,40px);
+  display:flex;align-items:center;gap:26px;flex-wrap:wrap;position:relative;overflow:hidden}
+.phead::before{content:'客';position:absolute;right:-14px;bottom:-58px;font-family:'Noto Serif JP';
+  font-size:180px;color:rgba(18,16,14,.03);line-height:1;pointer-events:none}
+.pav{position:relative;width:86px;height:86px;border-radius:50%;background:var(--ink);color:#fff;
+  display:flex;align-items:center;justify-content:center;font:600 34px 'Playfair Display';flex-shrink:0}
+.pav::after{content:'';position:absolute;bottom:3px;right:3px;width:17px;height:17px;border-radius:50%;
+  background:var(--green);border:3px solid #fff;animation:pd 2s ease-in-out infinite}
+@keyframes pd{0%,100%{box-shadow:0 0 0 0 rgba(26,127,75,.45)}50%{box-shadow:0 0 0 8px rgba(26,127,75,0)}}
+.pinfo h1{font-size:30px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.badge-f{font:600 9.5px 'Inter';letter-spacing:.14em;padding:6px 14px;border-radius:100px;
+  background:#faf3e4;color:var(--gold);border:1px solid #ecdcbb}
+.pmeta{font-size:13px;color:var(--muted);margin-top:6px}
+.pmeta b{color:var(--gold)}
+.pbal{margin-left:auto;text-align:right;position:relative;z-index:2}
+.pbal .l{font:600 10.5px 'Inter';letter-spacing:.22em;text-transform:uppercase;color:var(--muted)}
+.pbal .s{font:600 38px 'Playfair Display';line-height:1.1}
+
+/* табы */
+.tabs{display:flex;gap:10px;margin:34px 0 26px;flex-wrap:wrap}
+
+/* заказы */
+.order{background:#fff;border:1px solid var(--line);border-radius:28px;padding:26px;margin-bottom:18px;
+  transition:transform .5s var(--ease),box-shadow .5s var(--ease);position:relative;overflow:hidden}
+.order:hover{transform:translateY(-4px);box-shadow:0 30px 64px rgba(18,16,14,.1)}
+.ohead{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap}
+.oic{width:52px;height:52px;border-radius:18px;flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  background:var(--paper2);border:1px solid var(--line);font-size:22px}
+.ot{font:600 17px 'Playfair Display'}
+.os{font-size:12px;color:var(--muted);margin-top:3px}
+.op{margin-left:auto;text-align:right}
+.op .p{font:600 22px 'Playfair Display'}
+.tag{display:inline-block;margin-top:6px;font:600 9.5px 'Inter';letter-spacing:.12em;padding:5px 13px;border-radius:100px}
+.t-hold{background:#eef4fd;color:#2f5fa8;border:1px solid #cfdcf3}
+.t-wait{background:#fdf6e6;color:#997215;border:1px solid #f0e2bd}
+.t-done{background:#eef7f0;color:var(--green);border:1px solid #cfe8d8}
+.t-disp{background:#fdefee;color:var(--red);border:1px solid #f3d5d2}
+
+/* stepper с рисующейся линией */
+.stepper{display:flex;align-items:flex-start;margin:24px 0 8px;overflow-x:auto;padding-bottom:6px}
+.st{display:flex;flex-direction:column;align-items:center;gap:9px;min-width:92px;flex-shrink:0}
+.st .dot{width:30px;height:30px;border-radius:50%;border:1.5px solid var(--line);background:#fff;
+  display:flex;align-items:center;justify-content:center;font:600 12px 'Playfair Display';color:var(--muted);
+  transition:.5s var(--ease)}
+.st .lb{font-size:10.5px;color:var(--muted);text-align:center;line-height:1.35;max-width:96px}
+.st.ok .dot{background:var(--green);border-color:var(--green);color:#fff}
+.st.ok .lb{color:var(--green)}
+.st.now .dot{border-color:var(--red);color:var(--red);animation:np 1.8s ease-in-out infinite}
+.st.now .lb{color:var(--red);font-weight:600}
+@keyframes np{0%,100%{box-shadow:0 0 0 0 rgba(184,50,39,.35)}50%{box-shadow:0 0 0 9px rgba(184,50,39,0)}}
+.st-l{flex:1;height:1.5px;min-width:22px;background:var(--line);margin:15px 4px 0;position:relative;overflow:hidden}
+.st-l::after{content:'';position:absolute;inset:0;background:var(--green);transform:scaleX(0);
+  transform-origin:left;transition:transform .9s var(--ease)}
+.st-l.done::after{transform:scaleX(1)}
+
+.oact{display:flex;gap:12px;margin-top:20px;flex-wrap:wrap}
+.b-ok{padding:12px 24px;border-radius:100px;border:1px solid #cfe8d8;background:#eef7f0;color:var(--green);
+  font:600 12.5px 'Inter';cursor:pointer;transition:.4s var(--ease)}
+.b-ok:hover{background:var(--green);color:#fff;transform:translateY(-2px);box-shadow:0 12px 26px rgba(26,127,75,.25)}
+.b-dsp{padding:12px 24px;border-radius:100px;border:1px solid #f3d5d2;background:#fdefee;color:var(--red);
+  font:600 12.5px 'Inter';cursor:pointer;transition:.4s var(--ease)}
+.b-dsp:hover{background:var(--red);color:#fff;transform:translateY(-2px);box-shadow:0 12px 26px rgba(184,50,39,.25)}
+.b-chat{padding:12px 24px;border-radius:100px;border:1px solid var(--line);background:#fff;color:var(--ink);
+  font:600 12.5px 'Inter';cursor:pointer;transition:.4s var(--ease)}
+.b-chat:hover{background:var(--ink);color:#fff;transform:translateY(-2px)}
+.empty{text-align:center;padding:70px 20px;color:var(--muted);background:#fff;border:1px solid var(--line);border-radius:28px}
+.empty .k{font-family:'Noto Serif JP';font-size:56px;color:rgba(18,16,14,.1);display:block;margin-bottom:12px}
+.empty a{color:var(--red);text-decoration:none;font-weight:600}
+
+/* ===== ЧАТ ===== */
+.cbg{position:fixed;inset:0;z-index:500;background:rgba(18,16,14,.5);backdrop-filter:blur(10px);
+  display:none;align-items:flex-end;justify-content:center}
+.cbg.open{display:flex}
+.cwin{width:100%;max-width:540px;height:88vh;background:#fff;border-radius:32px 32px 0 0;
+  display:flex;flex-direction:column;overflow:hidden;animation:cu .45s var(--ease);
+  box-shadow:0 -20px 70px rgba(18,16,14,.25)}
+@keyframes cu{from{transform:translateY(70px);opacity:0}to{transform:none;opacity:1}}
+.ch{padding:20px 24px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:14px;flex-shrink:0}
+.cav{width:44px;height:44px;border-radius:50%;background:var(--ink);color:#fff;display:flex;align-items:center;
+  justify-content:center;font:600 17px 'Playfair Display';position:relative;flex-shrink:0}
+.cav::after{content:'';position:absolute;bottom:0;right:0;width:11px;height:11px;border-radius:50%;
+  background:var(--green);border:2.5px solid #fff}
+.cn{font:600 16px 'Playfair Display'}
+.cs{font-size:11.5px;color:var(--muted)}
+.cx{margin-left:auto;width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:transparent;
+  color:var(--muted);cursor:pointer;font-size:15px;transition:.35s}
+.cx:hover{border-color:var(--ink);color:var(--ink);transform:rotate(90deg)}
+.cwarn{margin:16px 20px 0;padding:13px 16px;border-radius:16px;background:#fdefee;border:1px solid #f3d5d2;
+  font-size:11.5px;line-height:1.6;color:#8a3b34;flex-shrink:0}
+.cbody{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:12px}
+.bub{max-width:76%;padding:13px 17px;border-radius:20px;font-size:13.5px;line-height:1.55;word-break:break-word}
+.bub .t{display:block;font-size:9.5px;opacity:.5;margin-top:6px}
+.bub.me{align-self:flex-end;background:var(--ink);color:#fff;border-bottom-right-radius:6px}
+.bub.them{align-self:flex-start;background:var(--paper2);border:1px solid var(--line);border-bottom-left-radius:6px}
+.bub.sys{align-self:center;max-width:92%;text-align:center;background:#fff;border:1px dashed var(--line);
+  color:var(--muted);font-size:11.5px;padding:10px 18px;border-radius:100px}
+.cfoot{padding:16px 18px;border-top:1px solid var(--line);display:flex;gap:10px;flex-shrink:0}
+.cin{flex:1;padding:15px 20px;border-radius:100px;border:1px solid var(--line);background:var(--paper);
+  font:500 14px 'Inter';outline:none;transition:.35s}
+.cin:focus{border-color:var(--ink)}
+.csend{padding:0 26px;border-radius:100px;border:none;cursor:pointer;font:600 14px 'Inter';color:#fff;
+  background:var(--ink);transition:.35s var(--ease)}
+.csend:hover{background:var(--red)}
+
+/* модалка спора */
+.dbg{position:fixed;inset:0;z-index:520;background:rgba(18,16,14,.55);backdrop-filter:blur(10px);
+  display:none;align-items:center;justify-content:center;padding:20px}
+.dbg.open{display:flex;animation:fi .3s}
+@keyframes fi{from{opacity:0}to{opacity:1}}
+.dmod{width:100%;max-width:460px;background:#fff;border-radius:32px;padding:32px;
+  box-shadow:0 40px 100px rgba(18,16,14,.3);animation:du .5s var(--ease)}
+@keyframes du{from{opacity:0;transform:translateY(40px) scale(.96)}to{opacity:1;transform:none}}
+.dmod h2{font-size:25px;display:flex;align-items:center;gap:10px}
+.dmod .sb{font-size:12.5px;color:var(--muted);margin:10px 0 22px}
+.drop{border:2px dashed #e2c3bf;border-radius:24px;padding:38px 20px;text-align:center;cursor:pointer;transition:.4s var(--ease)}
+.drop:hover{border-color:var(--red);background:#fdf7f6}
+.drop .i{font-size:34px}
+.drop .t{font:600 14px 'Playfair Display';margin-top:12px}
+.drop .s{font-size:11.5px;color:var(--muted);margin-top:5px}
+.fok{display:none;margin-top:14px;padding:13px 16px;border-radius:16px;background:#eef7f0;border:1px solid #cfe8d8;
+  font-size:12.5px;color:var(--green)}
+.drs{width:100%;margin-top:16px;padding:16px 20px;border-radius:20px;border:1px solid var(--line);
+  background:var(--paper);font:500 13.5px 'Inter';outline:none;resize:vertical}
+.drs:focus{border-color:var(--red)}
+.dbtns{display:flex;gap:12px;margin-top:22px}
+.dsend{flex:1;padding:16px;border-radius:100px;border:none;cursor:pointer;font:600 14.5px 'Inter';color:#fff;
+  background:var(--red);transition:.4s var(--ease)}
+.dsend:hover:not(:disabled){transform:translateY(-3px);box-shadow:0 18px 38px rgba(184,50,39,.3)}
+.dsend:disabled{opacity:.38;cursor:not-allowed}
+.dcancel{padding:16px 24px;border-radius:100px;border:1px solid var(--line);background:transparent;
+  color:var(--muted);font:500 13.5px 'Inter';cursor:pointer}
+.dcancel:hover{color:var(--ink);border-color:var(--ink)}
+@media(max-width:700px){.pbal{margin-left:0;text-align:left;width:100%}}
+</style>
 </head>
 <body>
-<div class="bg-fx"><div class="orb orb-1"></div></div>
+<div class="grain"></div>
+<div class="progress" id="progress"></div>
+<div class="cursor-glow" id="cursorGlow"></div>
+<div class="ripple"></div>
 
-<header>
+<header id="hdr">
   <nav class="nav">
-    <a href="./index.html" class="logo"><div class="logo-mark">₸</div><div class="logo-name">tenge<span>.gg</span></a>
+    <a href="./index.html" class="logo"><div class="logo-mark">₸</div><div class="logo-name">tenge<span>.gg</span></div></a>
     <div class="nav-links">
-      <a href="./catalog.html">Каталог</a>
-      <a href="./sell.html">Продать</a>
-      <a href="./profile.html" class="active">Профиль</a>
+      <a href="./index.html">Главная</a><a href="./catalog.html">Каталог</a>
+      <a href="./sell.html">Продать</a><a href="./profile.html" class="active">Профиль</a>
     </div>
+    <div class="nav-cta"><button class="btn-ghost" onclick="location.href='./auth.html'">Аккаунт</button></div>
+    <button class="burger" id="burger"><span></span><span></span><span></span></button>
   </nav>
 </header>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="./index.html">Главная</a><a href="./catalog.html">Каталог</a>
+  <a href="./sell.html">Продать</a><a href="./profile.html">Профиль</a>
+  <button class="btn-dark" onclick="location.href='./auth.html'">Аккаунт</button>
+</div>
 
-<div class="wrap">
+<div class="wrap" style="padding-bottom:100px">
+  <div class="page-head" style="padding-bottom:26px">
+    <div class="page-kicker reveal in">Личный кабинет</div>
+    <h1 class="page-title reveal in" data-d="1">Мои <em>сделки</em></h1>
+  </div>
 
-  <!-- PROFILE HEAD -->
-  <div class="p-head glass">
-    <div class="p-ava">A</div>
-    <div class="p-info">
-      <h1>Aseka <span class="founder">ОСНОВАТЕЛЬ · 0% комиссия на месяц</span></h1>
-      <div class="p-meta">★ <b>5.00</b> · 12 сделок · На платформе с июля 2026</div>
+  <div class="phead reveal">
+    <div class="pav" id="uav">A</div>
+    <div class="pinfo">
+      <h1 id="uname">Aseka <span class="badge-f">ОСНОВАТЕЛЬ · 0% МЕСЯЦ</span></h1>
+      <div class="pmeta">★ <b>5.00</b> · 12 сделок · На платформе с июля 2026</div>
     </div>
-    <div class="p-balance">
-      <div class="lbl">Баланс</div>
-      <div class="sum grad-text">12 500 ₸</div>
-      <button class="btn-kaspi" onclick="alert('Вывод на Kaspi: заявка создана. Деньги придут в течение 5 минут.')">Вывести на Kaspi →</button>
+    <div class="pbal">
+      <div class="l">Баланс</div>
+      <div class="s">12 500 ₸</div>
+      <button class="btn-hero" style="margin-top:10px;padding:14px 28px;font-size:13.5px"
+        onclick="alert('Заявка на вывод создана. Деньги придут на Kaspi в течение 5 минут.')"><span>Вывести на Kaspi</span></button>
     </div>
   </div>
 
-  <!-- TABS -->
-  <div class="tabs">
-    <button class="tab active" data-tab="buys">Мои покупки</button>
-    <button class="tab" data-tab="sells">Мои продажи</button>
-    <button class="tab" data-tab="escrow">Escrow-сделки</button>
+  <div class="tabs reveal" data-d="1">
+    <button class="pill active" data-t="buys">Мои покупки</button>
+    <button class="pill" data-t="sells">Мои продажи</button>
+    <button class="pill" data-t="escrow">Escrow-сделки</button>
   </div>
 
   <div id="content"></div>
 </div>
 
-<!-- DISPUTE MODAL -->
-<div class="modal-bg" id="disputeBg">
-  <div class="modal">
-    <h2>⚖️ Открыть спор</h2>
-    <p class="sub" id="dOrderInfo"></p>
-    <div class="drop" id="dropZone">
-      <div class="ic">🎥</div>
-      <div class="t">Загрузить видеодоказательство</div>
-      <div class="s">Непрерывная запись экрана получения аккаунта · MP4 до 500 МБ</div>
-      <input type="file" id="fileInput" accept="video/*" hidden>
-    </div>
-    <div class="file-ok" id="fileOk"></div>
-    <textarea class="m-reason" id="dReason" rows="3" placeholder="Опиши проблему: что не так с аккаунтом/товаром..."></textarea>
-    <div class="m-btns">
-      <button class="m-send" id="dSend" disabled>Отправить арбитру ⚖️</button>
-      <button class="m-close" id="dClose">Отмена</button>
-    </div>
+<!-- ЧАТ -->
+<div class="cbg" id="cbg"><div class="cwin">
+  <div class="ch">
+    <div class="cav" id="cav">D</div>
+    <div><div class="cn" id="cn">Продавец</div><div class="cs" id="cs">Чат сделки</div></div>
+    <button class="cx" id="cx">✕</button>
   </div>
-</div>
+  <div class="cwarn">🛡 Не уходите в другие мессенджеры. Все данные передавайте только здесь — переписка сохраняется и служит доказательством в арбитраже.</div>
+  <div class="cbody" id="cbody"></div>
+  <div class="cfoot"><input class="cin" id="cinp" placeholder="Сообщение..."><button class="csend" id="csend">→</button></div>
+</div></div>
+
+<!-- СПОР -->
+<div class="dbg" id="dbg"><div class="dmod">
+  <h2>⚖️ Открыть спор</h2>
+  <p class="sb" id="dinfo"></p>
+  <div class="drop" id="drop">
+    <div class="i">🎥</div>
+    <div class="t">Загрузить видеодоказательство</div>
+    <div class="s">Непрерывная запись получения · MP4 до 500 МБ</div>
+    <input type="file" id="dfile" accept="video/*" hidden>
+  </div>
+  <div class="fok" id="dfok"></div>
+  <textarea class="drs" id="drs" rows="3" placeholder="Опиши проблему: что не так с товаром..."></textarea>
+  <div class="dbtns"><button class="dsend" id="dsend" disabled>Отправить арбитру</button>
+    <button class="dcancel" id="dcancel">Отмена</button></div>
+</div></div>
+
+<footer>
+  <div class="wrap">
+    <div class="f-grid">
+      <div class="f-col">
+        <a href="./index.html" class="logo" style="margin-bottom:18px"><div class="logo-mark">₸</div><div class="logo-name">tenge<span>.gg</span></div></a>
+        <p style="font-size:13.5px;color:var(--muted);max-width:290px">Первое игровое торговое пространство Казахстана.</p>
+      </div>
+      <div class="f-col"><h4>Маркет</h4><a href="./catalog.html">Каталог игр</a><a href="./sell.html">Продать</a><a href="./profile.html">Кабинет</a></div>
+      <div class="f-col"><h4>Поддержка</h4><a href="#">Правила</a><a href="#">Арбитраж</a><a href="#">FAQ</a></div>
+      <div class="f-col"><h4>Соцсети</h4><a href="#">Telegram</a><a href="#">TikTok</a><a href="#">Instagram</a></div>
+    </div>
+    <div class="f-bottom"><span>© 2026 ТОО «Tenge.gg». Алматы.</span><span class="jp">侍の道 · Сделано в KZ</span></div>
+  </div>
+</footer>
 
 <script>
-const fmt=n=>n.toLocaleString('ru-RU')+' ₸';
+const $=id=>document.getElementById(id);
+const fmt=n=>Number(n).toLocaleString('ru-RU')+' ₸';
+const now=()=>new Date().toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'});
 
-/* ===== данные из localStorage + демо при первом визите ===== */
+/* пользователь */
+const uname=localStorage.getItem('tenge_user');
+if(uname){$('uname').innerHTML=uname+' <span class="badge-f">ОСНОВАТЕЛЬ · 0% МЕСЯЦ</span>';$('uav').textContent=uname[0].toUpperCase()}
+
+/* данные */
 if(!localStorage.getItem('tenge_orders')){
   localStorage.setItem('tenge_orders',JSON.stringify([
-   {id:'TG-1042',lotId:1,icon:'🔫',title:'PUBG Mobile — 660 UC',seller:'DarkSide_KZ',price:4400,status:'FUNDS_HOLD',stage:2,ts:Date.now()-3600000},
-   {id:'TG-1038',lotId:3,icon:'💎',title:'Free Fire — 1080 алмазов',seller:'FF_Shymkent',price:3900,status:'COMPLETED',stage:3,ts:Date.now()-86400000},
-  ]));
+   {id:'TG-1042',icon:'🔫',title:'PUBG Mobile — 660 UC',seller:'DarkSide_KZ',price:4620,status:'DATA_TRANSFERRED',stage:2,ts:Date.now()-3.6e6},
+   {id:'TG-1038',icon:'💎',title:'Free Fire — 1080 алмазов',seller:'FF_Shymkent',price:4095,status:'COMPLETED',stage:3,ts:Date.now()-8.6e7}]));
 }
 const ORDERS=JSON.parse(localStorage.getItem('tenge_orders')||'[]');
-const MY_LOTS=JSON.parse(localStorage.getItem('tenge_listings')||'[]');
+const MYLOTS=JSON.parse(localStorage.getItem('tenge_listings')||'[]');
+const SM={FUNDS_HOLD:['t-hold','ОПЛАЧЕНО'],DATA_TRANSFERRED:['t-wait','ПРОВЕРКА 24Ч'],
+  COMPLETED:['t-done','ЗАВЕРШЕНО'],DISPUTE:['t-disp','СПОР'],REFUNDED:['t-wait','ВОЗВРАТ']};
 
-const STATUS_MAP={
- FUNDS_HOLD:{cls:'st-hold',lbl:'FUNDS_HOLD'},
- DATA_TRANSFERRED:{cls:'st-wait',lbl:'ПРОВЕРКА 24Ч'},
- COMPLETED:{cls:'st-done',lbl:'ЗАВЕРШЕНО'},
- DISPUTE:{cls:'st-dispute',lbl:'СПОР'},
-};
-
-function orderCard(o,actions){
-  const st=STATUS_MAP[o.status]||STATUS_MAP.FUNDS_HOLD;
-  return `
-   <div class="order glass">
-     <div class="o-head">
-       <div class="o-ic">${o.icon}</div>
-       <div>
-         <div class="o-title">${o.title}</div>
-         <div class="o-sub">Продавец: ${o.seller} · заказ #${o.id}</div>
-       </div>
-       <div class="o-price">
-         <div class="p grad-text">${fmt(o.price)}</div>
-         <span class="st-tag ${st.cls}">${st.lbl}</span>
-       </div>
-     </div>
-     ${stepper(o.stage)}
-     ${actions?`<div class="o-actions">
-       <button class="btn-ok" onclick="confirmOrder('${o.id}')">✓ Подтвердить получение</button>
-       <button class="btn-dispute" onclick="openDispute('${o.id}')">⚖️ Открыть спор</button>
-     </div>`:''}
-   </div>`;
-}
-
-function lotCard(l){
-  const fee=Math.round(l.price*0.05);
-  return `
-   <div class="order glass">
-     <div class="o-head">
-       <div class="o-ic">${l.icon}</div>
-       <div>
-         <div class="o-title">${l.title}</div>
-         <div class="o-sub">Опубликован · ${new Date(l.ts*1000).toLocaleDateString('ru-RU')}</div>
-       </div>
-       <div class="o-price">
-         <div class="p grad-text">${fmt(l.price)}</div>
-         <span class="st-tag st-done">АКТИВЕН</span>
-       </div>
-     </div>
-     <div style="margin-top:12px;font-size:12px;color:var(--muted)">Комиссия при продаже: <b class="grad-text">${fmt(fee)}</b> · Получишь: <b style="color:#fff">${fmt(l.price-fee)}</b></div>
-   </div>`;
-}
-
-const content=document.getElementById('content');
-let currentOrderId=null;
-
-function render(tab){
-  let html='';
-  if(tab==='buys'){
-    const list=ORDERS;
-    html=list.length?list.map(o=>orderCard(o,o.status==='FUNDS_HOLD'||o.status==='DATA_TRANSFERRED')).join('')
-      :`<div class="empty glass"><div class="big">🌕</div>Покупок пока нет. <a href="./catalog.html" style="color:var(--cyan)">Открыть каталог →</a></div>`;
-  }else if(tab==='sells'){
-    html=MY_LOTS.length?MY_LOTS.map(lotCard).join('')
-      :`<div class="empty glass"><div class="big">💰</div>Лотов пока нет. <a href="./sell.html" style="color:var(--cyan)">Создать первый лот →</a></div>`;
-  }else{
-    const list=ORDERS.filter(o=>o.status==='FUNDS_HOLD'||o.status==='DATA_TRANSFERRED'||o.status==='DISPUTE');
-    html=list.length?list.map(o=>orderCard(o,o.status!=='DISPUTE')).join('')
-      :`<div class="empty glass"><div class="big">🛡</div>Нет активных escrow-сделок</div>`;
-  }
-  content.innerHTML=html;
-}
-
-/* stepper builder: stage 0..3 */
-function stepper(stage){
-  const steps=['Оплачено Kaspi','Ожидание передачи','Проверка покупателем (24ч)','Завершено'];
-  let h='';
-  steps.forEach((s,i)=>{
-    const cls=i<stage?'done':(i===stage?'now':'');
-    const mark=i<stage?'✓':(i+1);
-    h+=`<div class="stp ${cls}"><div class="dot">${mark}</div><div class="lb">${s}</div></div>`;
-    if(i<steps.length-1)h+=`<div class="stp-line ${i<stage?'done':''}"></div>`;
+function stepper(n){
+  const S=['Оплачено Kaspi','Ожидание передачи','Проверка (24ч)','Завершено'];let h='';
+  S.forEach((s,i)=>{
+    const c=i<n?'ok':(i===n?'now':'');
+    h+=`<div class="st ${c}"><div class="dot">${i<n?'✓':i+1}</div><div class="lb">${s}</div></div>`;
+    if(i<3)h+=`<div class="st-l ${i<n?'done':''}"></div>`;
   });
   return `<div class="stepper">${h}</div>`;
 }
-
-const DATA={};
-
-document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
-  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
-  t.classList.add('active');
-  render(t.dataset.tab);
-});
-
-function confirmOrder(id){
-  const orders=JSON.parse(localStorage.getItem('tenge_orders')||'[]');
-  const o=orders.find(x=>x.id===id);
-  if(o){o.status='COMPLETED';o.stage=3;localStorage.setItem('tenge_orders',JSON.stringify(orders));}
-  /* облако */
-  if(window.sb&&o&&o.cloudId){sb.from('orders').update({status:'COMPLETED'}).eq('id',o.cloudId).then(()=>{}).catch(e=>console.warn(e));}
-  alert('Сделка завершена! Средства отправлены продавцу (PAYOUT_TO_SELLER).');
-  location.reload();
+function oCard(o,act){
+  const s=SM[o.status]||SM.FUNDS_HOLD;
+  return `<div class="order reveal">
+    <div class="ohead">
+      <div class="oic">${o.icon||'🎮'}</div>
+      <div><div class="ot">${o.title}</div><div class="os">Продавец: ${o.seller} · заказ #${o.id}</div></div>
+      <div class="op"><div class="p">${fmt(o.price)}</div><span class="tag ${s[0]}">${s[1]}</span></div>
+    </div>
+    ${stepper(o.stage)}
+    ${act?`<div class="oact">
+      <button class="b-chat" onclick="openChat('${o.id}')">💬 Чат сделки</button>
+      <button class="b-ok" onclick="conf('${o.id}')">✓ Подтвердить получение</button>
+      <button class="b-dsp" onclick="openD('${o.id}')">⚖️ Открыть спор</button></div>`:''}
+  </div>`;
 }
-
-/* dispute modal */
-const bg=document.getElementById('disputeBg');
-const fileInput=document.getElementById('fileInput');
-const fileOk=document.getElementById('fileOk');
-const dReason=document.getElementById('dReason');
-const dSend=document.getElementById('dSend');
-let hasFile=false;
-
-function openDispute(id){
-  const o=ORDERS.find(x=>x.id===id);
-  currentOrderId=id;
-  document.getElementById('dOrderInfo').textContent=o.title+' · заказ #'+o.id;
-  bg.classList.add('open');
-  document.body.style.overflow='hidden';
+function lCard(l){
+  const f=Math.round(l.price*.05);
+  return `<div class="order reveal">
+    <div class="ohead">
+      <div class="oic">📦</div>
+      <div><div class="ot">${l.title}</div><div class="os">Опубликован · ${new Date(l.ts*1000).toLocaleDateString('ru-RU')}</div></div>
+      <div class="op"><div class="p">${fmt(l.price)}</div><span class="tag t-done">АКТИВЕН</span></div>
+    </div>
+    <div style="margin-top:16px;font-size:13px;color:var(--muted)">Комиссия: <b style="color:var(--ink)">${fmt(f)}</b> · Получишь: <b style="color:var(--green)">${fmt(l.price-f)}</b></div>
+  </div>`;
 }
-function closeDispute(){
-  bg.classList.remove('open');
-  document.body.style.overflow='';
-}
-document.getElementById('dClose').onclick=closeDispute;
-bg.addEventListener('click',e=>{if(e.target===bg)closeDispute()});
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDispute()});
-
-document.getElementById('dropZone').onclick=()=>fileInput.click();
-fileInput.addEventListener('change',()=>{
-  if(fileInput.files.length){
-    hasFile=true;
-    fileOk.style.display='block';
-    fileOk.textContent='✓ Загружено: '+fileInput.files[0].name;
-    updSend();
+function render(t){
+  let h='';
+  if(t==='buys'){
+    h=ORDERS.length?ORDERS.map(o=>oCard(o,['FUNDS_HOLD','DATA_TRANSFERRED'].includes(o.status))).join('')
+      :`<div class="empty"><span class="k">空</span>Покупок пока нет. <a href="./catalog.html">Открыть каталог →</a></div>`;
+  }else if(t==='sells'){
+    h=MYLOTS.length?MYLOTS.map(lCard).join('')
+      :`<div class="empty"><span class="k">売</span>Лотов пока нет. <a href="./sell.html">Создать первый лот →</a></div>`;
+  }else{
+    const l=ORDERS.filter(o=>['FUNDS_HOLD','DATA_TRANSFERRED','DISPUTE'].includes(o.status));
+    h=l.length?l.map(o=>oCard(o,o.status!=='DISPUTE')).join('')
+      :`<div class="empty"><span class="k">盾</span>Нет активных escrow-сделок</div>`;
   }
-});
-dReason.addEventListener('input',updSend);
-function updSend(){dSend.disabled=!(hasFile&&dReason.value.trim().length>=10)}
-dSend.onclick=()=>{
-  dSend.textContent='✓ Спор открыт';
-  dSend.disabled=true;
-  /* помечаем заказ как DISPUTE */
-  const orders=JSON.parse(localStorage.getItem('tenge_orders')||'[]');
-  const o=orders.find(x=>x.id===currentOrderId);
-  if(o){o.status='DISPUTE';localStorage.setItem('tenge_orders',JSON.stringify(orders));}
-  /* облако */
-  if(window.sb&&o&&o.cloudId){sb.from('orders').update({status:'DISPUTE'}).eq('id',o.cloudId).then(()=>{}).catch(e=>console.warn(e));}
-  setTimeout(()=>{
-    closeDispute();
-    alert('Спор #DSP-'+Math.floor(Math.random()*900+100)+' передан арбитру. Видео будет проверено в течение 2 часов. Средства остаются заморожены.');
-    dSend.textContent='Отправить арбитру ⚖️';
-    dReason.value='';fileInput.value='';hasFile=false;fileOk.style.display='none';updSend();
-    location.reload();
-  },600);
+  $('content').innerHTML=h;
+  setTimeout(()=>document.querySelectorAll('#content .reveal').forEach(e=>e.classList.add('in')),40);
+}
+document.querySelectorAll('.pill').forEach(p=>p.onclick=()=>{
+  document.querySelectorAll('.pill').forEach(x=>x.classList.remove('active'));
+  p.classList.add('active');render(p.dataset.t)});
+
+window.conf=function(id){
+  const o=ORDERS.find(x=>x.id===id);
+  if(o){o.status='COMPLETED';o.stage=3;localStorage.setItem('tenge_orders',JSON.stringify(ORDERS))}
+  alert('Сделка завершена! Средства отправлены продавцу.');location.reload();
 };
 
+/* ===== ЧАТ ===== */
+let cur=null;
+const key=i=>'tenge_chat_'+i;
+function seed(o){return [
+  {r:'sys',t:'Заказ #'+o.id+' создан. Средства заморожены (escrow).'},
+  {r:'them',t:'Здравствуйте! Вижу оплату. Напишите ваш игровой ID — отправлю в течение 5 минут.',ts:now()},
+  {r:'sys',t:'⏳ У продавца 24 часа на передачу данных'}]}
+function load(o){let m=JSON.parse(localStorage.getItem(key(o.id))||'null');
+  if(!m){m=seed(o);localStorage.setItem(key(o.id),JSON.stringify(m))}return m}
+function draw(m){$('cbody').innerHTML=m.map(x=>x.r==='sys'?`<div class="bub sys">${x.t}</div>`
+  :`<div class="bub ${x.r==='me'?'me':'them'}">${x.t}<span class="t">${x.ts||''}</span></div>`).join('');
+  $('cbody').scrollTop=$('cbody').scrollHeight}
+window.openChat=function(id){
+  const o=ORDERS.find(x=>x.id===id)||{id,seller:'Продавец',title:''};cur=o.id;
+  $('cn').textContent=o.seller;$('cav').textContent=(o.seller||'P')[0];
+  $('cs').textContent='Заказ #'+o.id+(o.title?' · '+o.title:'');
+  draw(load(o));$('cbg').classList.add('open');document.body.style.overflow='hidden';
+};
+function cc(){$('cbg').classList.remove('open');document.body.style.overflow=''}
+$('cx').onclick=cc;$('cbg').onclick=e=>{if(e.target.id==='cbg')cc()};
+function send(){
+  const i=$('cinp'),v=i.value.trim();if(!v||!cur)return;
+  const m=JSON.parse(localStorage.getItem(key(cur))||'[]');
+  m.push({r:'me',t:v,ts:now()});localStorage.setItem(key(cur),JSON.stringify(m));i.value='';draw(m);
+  setTimeout(()=>{
+    const m2=JSON.parse(localStorage.getItem(key(cur))||'[]');
+    const hasId=/\d{5,}/.test(v);
+    m2.push({r:'them',t:hasId?'Принял ID! Отправляю прямо сейчас, запишите видео получения 🎥':'Хорошо, понял вас. Остаюсь на связи.',ts:now()});
+    if(hasId)m2.push({r:'sys',t:'✅ Продавец подтвердил передачу. Проверьте товар и нажмите «Подтвердить получение».'});
+    localStorage.setItem(key(cur),JSON.stringify(m2));draw(m2);
+  },1300);
+}
+$('csend').onclick=send;$('cinp').onkeydown=e=>{if(e.key==='Enter')send()};
+
+/* ===== СПОР ===== */
+let dcur=null,hasF=false;
+window.openD=function(id){const o=ORDERS.find(x=>x.id===id);dcur=id;
+  $('dinfo').textContent=(o?o.title+' · ':'')+'заказ #'+id;
+  $('dbg').classList.add('open');document.body.style.overflow='hidden'};
+function dc(){$('dbg').classList.remove('open');document.body.style.overflow=''}
+$('dcancel').onclick=dc;$('dbg').onclick=e=>{if(e.target.id==='dbg')dc()};
+$('drop').onclick=()=>$('dfile').click();
+$('dfile').onchange=()=>{if($('dfile').files.length){hasF=true;$('dfok').style.display='block';
+  $('dfok').textContent='✓ Загружено: '+$('dfile').files[0].name;up()}};
+$('drs').oninput=up;
+function up(){$('dsend').disabled=!(hasF&&$('drs').value.trim().length>=10)}
+$('dsend').onclick=()=>{
+  const o=ORDERS.find(x=>x.id===dcur);
+  if(o){o.status='DISPUTE';localStorage.setItem('tenge_orders',JSON.stringify(ORDERS))}
+  $('dsend').textContent='✓ Отправлено';$('dsend').disabled=true;
+  setTimeout(()=>{dc();alert('Спор #DSP-'+Math.floor(Math.random()*900+100)+' передан арбитру. Видео проверят в течение 2 часов. Средства заморожены.');location.reload()},700);
+};
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){cc();dc()}});
+
+/* общее */
+window.addEventListener('scroll',()=>{const h=document.documentElement;
+  $('progress').style.width=h.scrollTop/(h.scrollHeight-h.clientHeight)*100+'%';
+  $('hdr').classList.toggle('scrolled',h.scrollTop>20)},{passive:true});
+(function(){const g=$('cursorGlow');let x=0,y=0,cx=0,cy=0;
+  window.addEventListener('mousemove',e=>{x=e.clientX;y=e.clientY},{passive:true});
+  (function f(){cx+=(x-cx)*.12;cy+=(y-cy)*.12;g.style.left=cx+'px';g.style.top=cy+'px';requestAnimationFrame(f)})()})();
+const bg=$('burger'),mm=$('mobileMenu');
+bg.onclick=()=>{mm.classList.toggle('open');bg.classList.toggle('open')};
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.1});
+document.querySelectorAll('.reveal:not(.in)').forEach(e=>io.observe(e));
 render('buys');
-
-/* ============ LIVE TRADE CHAT ============ */
-(function(){
-  const css=`
-  .chat-bg{position:fixed;inset:0;z-index:300;background:rgba(3,4,6,.72);backdrop-filter:blur(10px);display:none;align-items:flex-end;justify-content:center;padding:0}
-  .chat-bg.open{display:flex}
-  .chat-win{width:100%;max-width:520px;height:88vh;background:rgba(14,17,24,.97);border:1px solid rgba(255,255,255,.14);border-radius:24px 24px 0 0;display:flex;flex-direction:column;animation:chUp .38s cubic-bezier(.2,.9,.3,1.1);overflow:hidden}
-  @keyframes chUp{from{transform:translateY(60px);opacity:0}to{transform:none;opacity:1}}
-  .ch-head{padding:16px 20px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:12px;flex-shrink:0}
-  .ch-ava{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#4FACFE,#8B5CF6);display:flex;align-items:center;justify-content:center;font:700 15px 'Space Grotesk';color:#fff;flex-shrink:0;position:relative}
-  .ch-ava::after{content:'';position:absolute;bottom:0;right:0;width:10px;height:10px;border-radius:50%;background:#34d399;border:2px solid #0e1118}
-  .ch-name{font:600 14px 'Space Grotesk';color:#fff}
-  .ch-sub{font-size:11px;color:#8A93A6}
-  .ch-x{margin-left:auto;width:34px;height:34px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:transparent;color:#8A93A6;cursor:pointer;font-size:15px}
-  .ch-x:hover{color:#fff;border-color:rgba(0,242,254,.5)}
-  .ch-warn{margin:12px 16px 0;padding:11px 14px;border-radius:12px;background:rgba(255,90,90,.07);border:1px solid rgba(255,90,90,.24);font-size:11px;line-height:1.5;color:#ffb4b4;flex-shrink:0}
-  .ch-body{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px}
-  .ch-body::-webkit-scrollbar{width:6px}.ch-body::-webkit-scrollbar-thumb{background:#1a2230;border-radius:6px}
-  .bub{max-width:78%;padding:11px 15px;border-radius:16px;font-size:13.5px;line-height:1.5;word-break:break-word}
-  .bub .t{display:block;font-size:9.5px;opacity:.55;margin-top:5px;letter-spacing:.04em}
-  .bub.me{align-self:flex-end;background:linear-gradient(135deg,#00F2FE,#4FACFE);color:#060709;border-bottom-right-radius:5px}
-  .bub.them{align-self:flex-start;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:#E7EAF0;border-bottom-left-radius:5px}
-  .bub.sys{align-self:center;max-width:92%;text-align:center;background:rgba(0,242,254,.07);border:1px solid rgba(0,242,254,.24);color:#9be9f0;font-size:11.5px;padding:9px 14px;border-radius:100px}
-  .ch-foot{padding:12px 14px;border-top:1px solid rgba(255,255,255,.08);display:flex;gap:9px;flex-shrink:0}
-  .ch-in{flex:1;padding:13px 16px;border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);color:#fff;font:500 13.5px 'Inter';outline:none}
-  .ch-in:focus{border-color:rgba(0,242,254,.6)}
-  .ch-send{padding:0 20px;border-radius:14px;border:none;cursor:pointer;font:700 13px 'Space Grotesk';color:#060709;background:linear-gradient(135deg,#00F2FE,#4FACFE);box-shadow:0 0 16px rgba(0,242,254,.35)}
-  .btn-chat{padding:10px 20px;border-radius:11px;cursor:pointer;font:700 12px 'Space Grotesk';color:#00F2FE;background:rgba(0,242,254,.07);border:1px solid rgba(0,242,254,.3);transition:.25s}
-  .btn-chat:hover{background:rgba(0,242,254,.15)}
-  `;
-  const st=document.createElement('style');st.textContent=css;document.head.appendChild(st);
-
-  document.body.insertAdjacentHTML('beforeend',`
-  <div class="chat-bg" id="chatBg"><div class="chat-win">
-    <div class="ch-head">
-      <div class="ch-ava" id="chAva">D</div>
-      <div><div class="ch-name" id="chName">Продавец</div><div class="ch-sub" id="chSub">Чат сделки</div></div>
-      <button class="ch-x" id="chX">✕</button>
-    </div>
-    <div class="ch-warn">🛡 Не уходите в другие мессенджеры. Все данные передавайте только здесь — переписка сохраняется и служит доказательством в арбитраже.</div>
-    <div class="ch-body" id="chBody"></div>
-    <div class="ch-foot">
-      <input class="ch-in" id="chIn" placeholder="Сообщение...">
-      <button class="ch-send" id="chSend">→</button>
-    </div>
-  </div></div>`);
-
-  let curId=null;
-  const key=id=>'tenge_chat_'+id;
-  const now=()=>new Date().toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'});
-
-  function seed(o){
-    return [
-      {r:'sys',t:'Заказ #'+o.id+' создан. Средства заморожены (escrow).'},
-      {r:'them',t:'Здравствуйте! Вижу оплату по заказу '+o.id+'. Напишите ваш игровой ID — отправлю в течение 5 минут.',ts:now()},
-      {r:'sys',t:'⏳ У продавца 24 часа на передачу данных'}
-    ];
-  }
-  function load(o){
-    let m=JSON.parse(localStorage.getItem(key(o.id))||'null');
-    if(!m){m=seed(o);localStorage.setItem(key(o.id),JSON.stringify(m))}
-    return m;
-  }
-  function draw(m){
-    document.getElementById('chBody').innerHTML=m.map(x=>
-      x.r==='sys'?`<div class="bub sys">${x.t}</div>`
-      :`<div class="bub ${x.r==='me'?'me':'them'}">${x.t}<span class="t">${x.ts||''}</span></div>`).join('');
-    const b=document.getElementById('chBody');b.scrollTop=b.scrollHeight;
-  }
-  window.openChat=function(id){
-    const o=(typeof ORDERS!=='undefined'?ORDERS:[]).find(x=>x.id===id)||{id:id,seller:'Продавец',title:''};
-    curId=o.id;
-    document.getElementById('chName').textContent=o.seller||'Продавец';
-    document.getElementById('chAva').textContent=(o.seller||'P')[0];
-    document.getElementById('chSub').textContent='Заказ #'+o.id+(o.title?' · '+o.title:'');
-    draw(load(o));
-    document.getElementById('chatBg').classList.add('open');
-    document.body.style.overflow='hidden';
-  };
-  function close(){document.getElementById('chatBg').classList.remove('open');document.body.style.overflow=''}
-  document.getElementById('chX').onclick=close;
-  document.getElementById('chatBg').addEventListener('click',e=>{if(e.target.id==='chatBg')close()});
-
-  function send(){
-    const i=document.getElementById('chIn');const v=i.value.trim();if(!v||!curId)return;
-    const m=JSON.parse(localStorage.getItem(key(curId))||'[]');
-    m.push({r:'me',t:v,ts:now()});
-    localStorage.setItem(key(curId),JSON.stringify(m));
-    i.value='';draw(m);
-    setTimeout(()=>{
-      const m2=JSON.parse(localStorage.getItem(key(curId))||'[]');
-      const reply=/\d{5,}/.test(v)
-        ? 'Принял ID! Отправляю прямо сейчас, запишите видео получения 🎥'
-        : 'Хорошо, понял вас. Оставайтесь на связи.';
-      m2.push({r:'them',t:reply,ts:now()});
-      if(/\d{5,}/.test(v))m2.push({r:'sys',t:'✅ Продавец подтвердил передачу. Проверьте товар и нажмите «Подтвердить получение».'});
-      localStorage.setItem(key(curId),JSON.stringify(m2));draw(m2);
-    },1400);
-  }
-  document.getElementById('chSend').onclick=send;
-  document.getElementById('chIn').addEventListener('keydown',e=>{if(e.key==='Enter')send()});
-
-  /* кнопка «Чат сделки» на всех активных заказах */
-  function addBtns(){
-    document.querySelectorAll('#content .order').forEach(card=>{
-      if(card.querySelector('.btn-chat'))return;
-      const tag=card.querySelector('.st-tag');
-      if(!tag||/ЗАВЕРШЕНО|АКТИВЕН/.test(tag.textContent))return;
-      const idm=card.querySelector('.o-sub')?.textContent.match(/#(TG-\d+)/);
-      if(!idm)return;
-      let act=card.querySelector('.o-actions');
-      if(!act){act=document.createElement('div');act.className='o-actions';card.appendChild(act)}
-      const b=document.createElement('button');
-      b.className='btn-chat';b.textContent='💬 Чат сделки';
-      b.onclick=()=>openChat(idm[1]);
-      act.prepend(b);
-    });
-  }
-  const mo=new MutationObserver(addBtns);
-  mo.observe(document.getElementById('content'),{childList:true,subtree:true});
-  addBtns();
-})();
 </script>
 </body>
 </html>
