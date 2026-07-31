@@ -131,6 +131,8 @@ footer{border-top:1px solid var(--line);padding:22px;text-align:center;font-size
         </div>
         <button class="btn" id="pwIn"><span>Войти</span></button>
         <button class="btn-o" id="pwUp" style="margin-top:10px">Создать аккаунт</button>
+        <button id="pwForgot" style="display:block;margin:14px auto 0;background:none;border:none;cursor:pointer;
+          font:500 13px Inter;color:var(--muted);text-decoration:underline">Забыли пароль?</button>
         <div class="msg" id="pwMsg"></div>
       </div>
 
@@ -146,6 +148,21 @@ footer{border-top:1px solid var(--line);padding:22px;text-align:center;font-size
       </button>
 
       <div class="tg-note">Вход через Telegram временно отключён: виджет не даёт защищённой сессии. Пользуйся почтой или Google.</div>
+    </div>
+
+    <!-- НОВЫЙ ПАРОЛЬ (после перехода по ссылке восстановления) -->
+    <div class="pane" id="pane-new" style="display:none">
+      <p class="sub" style="margin-bottom:18px">Придумай новый пароль — минимум 8 символов.</p>
+      <div class="field">
+        <label>Новый пароль</label>
+        <input type="password" id="npPass" placeholder="••••••••" autocomplete="new-password">
+      </div>
+      <div class="field">
+        <label>Повтори пароль</label>
+        <input type="password" id="npPass2" placeholder="••••••••" autocomplete="new-password">
+      </div>
+      <button class="btn" id="npBtn"><span>Сохранить пароль</span></button>
+      <div class="msg" id="npMsg"></div>
     </div>
 
     <!-- УЖЕ ВОШЁЛ -->
@@ -223,12 +240,47 @@ $('gBtn').onclick=async()=>{
 localStorage.removeItem('tenge_tg');
 localStorage.removeItem('tenge_tg_id');
 
+/* ===== ВОССТАНОВЛЕНИЕ ПАРОЛЯ ===== */
+$('pwForgot').onclick=async()=>{
+  const email=$('pwEmail').value.trim();
+  if(!email.includes('@'))return show($('pwMsg'),'Впиши email в поле выше — пришлём ссылку для смены пароля',false);
+  if(!window.sb)return show($('pwMsg'),'Supabase не подключён',false);
+  const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname});
+  if(error)return show($('pwMsg'),'Ошибка: '+error.message,false);
+  show($('pwMsg'),'✓ Ссылка для смены пароля отправлена на '+email,true);
+};
+
+/* пришли по ссылке восстановления — просим новый пароль */
+let RECOVERY = location.hash.includes('type=recovery');
+function showNewPw(){
+  RECOVERY=true;
+  document.querySelectorAll('.pane').forEach(p=>p.classList.remove('on'));
+  document.querySelector('.tabs').style.display='none';
+  const box=$('pane-new'); box.style.display='block'; box.classList.add('on');
+  $('authBox').style.display='block';
+  $('sessBox').classList.remove('on');
+}
+if(RECOVERY)showNewPw();
+
+$('npBtn').onclick=async()=>{
+  const p1=$('npPass').value, p2=$('npPass2').value;
+  if(p1.length<8)return show($('npMsg'),'Пароль короче 8 символов — так легко подобрать',false);
+  if(p1!==p2)return show($('npMsg'),'Пароли не совпадают',false);
+  $('npBtn').disabled=true;
+  const {error}=await sb.auth.updateUser({password:p1});
+  $('npBtn').disabled=false;
+  if(error)return show($('npMsg'),'Ошибка: '+error.message,false);
+  show($('npMsg'),'✓ Пароль изменён. Перенаправляем в кабинет…',true);
+  RECOVERY=false;
+  setTimeout(()=>location.replace('./profile.html'),1200);
+};
+
 /* выход */
 $('outBtn').onclick=async()=>{await sb.auth.signOut();render()};
 
 /* состояние */
 async function render(){
-  if(!window.sb)return;
+  if(!window.sb||RECOVERY)return;
   const {data}=await sb.auth.getSession();
   const s=data?.session;
   if(s){
@@ -247,7 +299,7 @@ async function render(){
     localStorage.removeItem('tenge_user');
   }
 }
-if(window.sb)sb.auth.onAuthStateChange(()=>render());
+if(window.sb)sb.auth.onAuthStateChange((e)=>{ if(e==='PASSWORD_RECOVERY'){showNewPw();return} if(!RECOVERY)render(); });
 render();
 </script>
 </body>

@@ -313,7 +313,7 @@ const IC={
 };
 const DEMO=[];   /* демо-лоты убраны: каталог показывает только реальные listings из Supabase */
 let LOTS=[...JSON.parse(localStorage.getItem('tenge_listings')||'[]').map(l=>({
-  id:l.id,g:l.game,c:l.cat,ic:'gift',t:l.title,d:l.desc,p:l.price,s:l.seller||'Aseka',on:1,r:5,dl:0,ts:l.ts,tint:'#eef7f0',mine:1
+  id:l.id,g:l.game,c:l.cat,ic:'gift',t:l.title,d:l.desc,p:l.price,s:l.seller||'Продавец KZ',on:1,r:5,dl:0,ts:l.ts,tint:'#eef7f0',mine:1
 })),...DEMO];
 
 /* облако */

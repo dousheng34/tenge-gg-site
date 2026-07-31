@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Страница не найдена — tenge.gg</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#fdfcfa">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%2312100e'/%3E%3Ctext x='32' y='45' font-size='38' font-family='Georgia,serif' fill='%23fdfcfa' text-anchor='middle'%3E%E2%82%B8%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,600&family=Inter:wght@400;500;600&family=Noto+Serif+JP:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#12100e;--muted:#6f6a63;--line:#e9e5dd;--paper:#fdfcfa;--paper2:#f7f4ef;--red:#b83227;--gold:#a98040}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:'Inter',system-ui,sans-serif;
+  min-height:100vh;display:flex;flex-direction:column}
+header{border-bottom:1px solid var(--line)}
+.nav{max-width:1180px;margin:0 auto;padding:20px 24px;display:flex;align-items:center;gap:14px}
+.logo{display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit}
+.logo-mark{width:34px;height:34px;border-radius:10px;background:var(--ink);color:var(--paper);
+  display:grid;place-items:center;font-family:Georgia,serif;font-size:18px}
+.logo-name{font:600 18px 'Playfair Display',serif}
+.logo-name span{color:var(--red)}
+main{flex:1;display:grid;place-items:center;padding:70px 24px;position:relative;overflow:hidden}
+.box{max-width:560px;text-align:center;position:relative;z-index:2}
+.kanji{position:absolute;left:50%;top:50%;transform:translate(-50%,-52%);font-family:'Noto Serif JP',serif;
+  font-size:min(42vw,340px);color:rgba(18,16,14,.045);z-index:1;pointer-events:none;user-select:none}
+.code{font:600 13px 'Inter';letter-spacing:.34em;text-transform:uppercase;color:var(--red);
+  display:flex;align-items:center;justify-content:center;gap:12px}
+.code::before,.code::after{content:'';width:32px;height:1px;background:var(--red);opacity:.5}
+h1{font:600 clamp(30px,5.5vw,50px)/1.1 'Playfair Display',serif;margin:18px 0 16px}
+h1 em{font-style:italic;color:var(--red)}
+p{color:var(--muted);font-size:16px;line-height:1.65;max-width:430px;margin:0 auto}
+.acts{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-top:34px}
+.b{padding:16px 34px;border-radius:100px;border:none;cursor:pointer;text-decoration:none;
+  font:600 15px 'Inter';transition:.35s cubic-bezier(.22,.9,.28,1)}
+.b-d{background:var(--ink);color:#fff}
+.b-d:hover{background:var(--red);transform:translateY(-2px)}
+.b-o{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.b-o:hover{border-color:var(--ink);transform:translateY(-2px)}
+.links{margin-top:40px;padding-top:26px;border-top:1px solid var(--line);display:flex;gap:22px;
+  flex-wrap:wrap;justify-content:center}
+.links a{color:var(--muted);font-size:13.5px;text-decoration:none}
+.links a:hover{color:var(--red)}
+footer{border-top:1px solid var(--line);background:var(--paper2);padding:22px 24px;text-align:center;
+  font-size:12.5px;color:var(--muted)}
+</style>
+</head>
+<body>
+<header>
+  <nav class="nav">
+    <a href="./index.html" class="logo">
+      <div class="logo-mark">₸</div>
+      <div class="logo-name">tenge<span>.gg</span></div>
+    </a>
+  </nav>
+</header>
+
+<main>
+  <div class="kanji">迷</div>
+  <div class="box">
+    <div class="code">Ошибка 404</div>
+    <h1>Такой страницы<br>здесь <em>нет</em></h1>
+    <p>Возможно, лот уже продан, ссылка устарела или в адресе опечатка. Каталог на месте — там всё живое.</p>
+    <div class="acts">
+      <a class="b b-d" href="./catalog.html">Открыть каталог</a>
+      <a class="b b-o" href="./index.html">На главную</a>
+    </div>
+    <div class="links">
+      <a href="./sell.html">Продать лот</a>
+      <a href="./profile.html">Личный кабинет</a>
+      <a href="./index.html#faq">Частые вопросы</a>
+      <a href="https://t.me/tenge_gg_support" target="_blank" rel="noopener">Написать в поддержку</a>
+    </div>
+  </div>
+</main>
+
+<footer>© 2026 ТОО «Tenge.gg» · Казахстан, Алматы</footer>
+</body>
+</html>

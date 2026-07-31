@@ -1085,7 +1085,10 @@ document.getElementById('faqList').addEventListener('click',e=>{
   }catch(e){}
 })();
 
-/* ==================== ЖИВАЯ ЛЕНТА: только реальные сделки ==================== */
+/* ==================== ЖИВАЯ ЛЕНТА: только реальные сделки ====================
+   Гость не имеет права видеть таблицу orders (и не должен), поэтому лента
+   читает витрину sales_feed: там только товар, имя и сумма, без email и id.
+   Пусто в базе -> лента не показывается вообще.                          */
 (function(){
   const box=document.getElementById('toasts');
   if(!box||!window.sb)return;
@@ -1093,18 +1096,34 @@ document.getElementById('faqList').addEventListener('click',e=>{
   function toast(o){
     if(!o||seen.has(o.id))return; seen.add(o.id);
     const who=o.buyer_name||'Покупатель';
-    const what=o.listing_title?('купил '+o.listing_title):'оформил сделку';
+    const what=o.title?('купил '+o.title):'оформил сделку';
+    const when=o.created_at?timeAgo(o.created_at):'только что';
     const el=document.createElement('div');
     el.className='toast';
     el.innerHTML=`<div class="av">${ini2(who)}</div><div><div class="tt">${who}</div>
-      <div class="ts">${what}</div></div><div class="tp">${o.escrow_amount?kzt(o.escrow_amount):''}</div>`;
+      <div class="ts">${what} · ${when}</div></div><div class="tp">${o.amount?kzt(o.amount):''}</div>`;
     box.appendChild(el);
     requestAnimationFrame(()=>el.classList.add('in'));
     setTimeout(()=>{el.classList.remove('in');setTimeout(()=>el.remove(),600)},6000);
   }
+  function timeAgo(ts){
+    const m=Math.floor((Date.now()-new Date(ts).getTime())/60000);
+    if(m<1)return 'только что';
+    if(m<60)return m+' мин назад';
+    const h=Math.floor(m/60); if(h<24)return h+' ч назад';
+    return Math.floor(h/24)+' дн назад';
+  }
+  /* последние сделки — показываем по одной, чтобы не сыпать стопкой */
+  (async()=>{
+    try{
+      const {data}=await sb.from('sales_feed').select('*').order('created_at',{ascending:false}).limit(5);
+      (data||[]).reverse().forEach((o,k)=>setTimeout(()=>toast(o), 3500+k*9000));
+    }catch(e){}
+  })();
+  /* и новые в реальном времени */
   try{
-    sb.channel('orders-feed')
-      .on('postgres_changes',{event:'INSERT',schema:'public',table:'orders'},p=>toast(p.new))
+    sb.channel('sales-feed')
+      .on('postgres_changes',{event:'INSERT',schema:'public',table:'sales_feed'},p=>toast(p.new))
       .subscribe();
   }catch(e){}
 })();

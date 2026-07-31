@@ -193,7 +193,7 @@ try{window.sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);}catc
   <div class="phead reveal">
     <div class="pav" id="uav">A</div>
     <div class="pinfo">
-      <h1 id="uname">Aseka <span class="badge-f">ОСНОВАТЕЛЬ · 0% МЕСЯЦ</span></h1>
+      <h1 id="uname">Загружаем…</h1>
       <div class="pmeta">★ <b>5.00</b> · 12 сделок · На платформе с июля 2026</div>
     </div>
     <div class="pbal">
@@ -222,7 +222,12 @@ try{window.sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);}catc
   </div>
   <div class="cwarn">🛡 Не уходите в другие мессенджеры. Все данные передавайте только здесь — переписка сохраняется и служит доказательством в арбитраже.</div>
   <div class="cbody" id="cbody"></div>
-  <div class="cfoot"><input class="cin" id="cinp" placeholder="Сообщение..."><button class="csend" id="csend">→</button></div>
+  <div class="cfoot">
+    <button class="csend" id="cclip" title="Прикрепить видео или скриншот передачи" style="padding:0 16px;background:var(--paper2);color:var(--ink)">📎</button>
+    <input class="cin" id="cinp" placeholder="Сообщение...">
+    <button class="csend" id="csend">→</button>
+    <input type="file" id="cfile" accept="video/*,image/*" hidden>
+  </div>
 </div></div>
 
 <!-- СПОР -->
@@ -292,6 +297,7 @@ sb&&sb.auth.onAuthStateChange((e)=>{ if(e==='SIGNED_OUT') location.replace('./au
 const ORDERS=[];   // заполняется реальными заказами из Supabase
 const MYLOTS=[];   // заполняется моими лотами из Supabase
 const REVIEWED=new Set();   // заказы, по которым отзыв уже оставлен
+const SALES=[];             // заказы, где я продавец
 const SM={FUNDS_HOLD:['t-hold','ОПЛАЧЕНО'],DATA_TRANSFERRED:['t-wait','ПРОВЕРКА 24Ч'],
   COMPLETED:['t-done','ЗАВЕРШЕНО'],DISPUTE:['t-disp','СПОР'],REFUNDED:['t-wait','ВОЗВРАТ']};
 
@@ -323,6 +329,22 @@ function oCard(o,act){
         :`<button class="b-ok" onclick="openRev('${o.id}')">★ Оставить отзыв</button>`}</div>`:''}
   </div>`;
 }
+function sCard(o){
+  const s=SM[o.status]||SM.FUNDS_HOLD;
+  const f=Math.round(o.price*.05);
+  return `<div class="order reveal">
+    <div class="ohead">
+      <div class="oic">${o.icon}</div>
+      <div><div class="ot">${o.title}</div><div class="os">Покупатель: ${o.seller} · заказ #${String(o.id).slice(0,8)}</div></div>
+      <div class="op"><div class="p">${fmt(o.price-f)}</div><span class="tag ${s[0]}">${s[1]}</span></div>
+    </div>
+    ${stepper(o.stage)}
+    <div class="oact">
+      <button class="b-chat" onclick="openChat('${o.id}')">💬 Чат сделки</button>
+      ${o.status==='FUNDS_HOLD'?`<button class="b-ok" onclick="sent('${o.id}')">✓ Данные переданы</button>`:''}
+    </div>
+  </div>`;
+}
 function lCard(l){
   const f=Math.round(l.price*.05);
   return `<div class="order reveal">
@@ -340,8 +362,11 @@ function render(t){
     h=ORDERS.length?ORDERS.map(o=>oCard(o,['FUNDS_HOLD','DATA_TRANSFERRED'].includes(o.status))).join('')
       :`<div class="empty"><span class="k">空</span>Покупок пока нет. <a href="./catalog.html">Открыть каталог →</a></div>`;
   }else if(t==='sells'){
-    h=MYLOTS.length?MYLOTS.map(lCard).join('')
-      :`<div class="empty"><span class="k">売</span>Лотов пока нет. <a href="./sell.html">Создать первый лот →</a></div>`;
+    const sh=SALES.length?`<div class="os" style="margin:0 0 12px">Продажи, ожидающие тебя</div>`+
+      SALES.map(o=>sCard(o)).join('')+
+      `<div class="os" style="margin:26px 0 12px">Мои опубликованные лоты</div>`:'';
+    h=sh+(MYLOTS.length?MYLOTS.map(lCard).join('')
+      :(SALES.length?'':`<div class="empty"><span class="k">売</span>Лотов пока нет. <a href="./sell.html">Создать первый лот →</a></div>`));
   }else{
     const l=ORDERS.filter(o=>['FUNDS_HOLD','DATA_TRANSFERRED','DISPUTE'].includes(o.status));
     h=l.length?l.map(o=>oCard(o,o.status!=='DISPUTE')).join('')
@@ -365,6 +390,18 @@ async function loadMyOrders(){
       ts:new Date(o.created_at).getTime()
     }));
     ORDERS.length=0; mapped.forEach(m=>ORDERS.push(m));
+
+    /* мои продажи — заказы, где я продавец */
+    const {data:sd}=await sb.from('orders').select('*').eq('seller_id',ME.id)
+      .order('created_at',{ascending:false});
+    SALES.length=0;
+    (sd||[]).forEach(o=>SALES.push({
+      id:o.id, icon:'💰', title:o.listing_title||'Продажа',
+      seller:o.buyer_name||'Покупатель', price:+o.escrow_amount||0,
+      status:o.status||'FUNDS_HOLD',
+      stage:({FUNDS_HOLD:1,DATA_TRANSFERRED:2,COMPLETED:3,DISPUTE:2,REFUNDED:3})[o.status]||1,
+      ts:new Date(o.created_at).getTime()
+    }));
 
     /* по каким сделкам отзыв уже есть */
     const {data:rv}=await sb.from('reviews').select('order_id').eq('author_id',ME.id);
@@ -446,6 +483,29 @@ async function send(){
   loadChat(cur);
 }
 $('csend').onclick=send;$('cinp').onkeydown=e=>{if(e.key==='Enter')send()};
+
+/* вложение: видео передачи или скриншот — в приватный бакет evidence */
+$('cclip').onclick=()=>$('cfile').click();
+$('cfile').onchange=async()=>{
+  const f=$('cfile').files[0]; if(!f||!cur||!ME)return;
+  if(f.size>52428800){alert('Файл больше 50 МБ. Сожми видео или вырежи ключевой момент.');$('cfile').value='';return}
+  const btn=$('cclip'); btn.textContent='…'; btn.disabled=true;
+  const path=cur+'/'+Date.now()+'_'+f.name.replace(/[^\w.\-]/g,'_');
+  const {error:upErr}=await sb.storage.from('evidence').upload(path,f,{upsert:false});
+  btn.textContent='📎'; btn.disabled=false; $('cfile').value='';
+  if(upErr){alert('Файл не загрузился: '+upErr.message);return}
+  await sb.from('trade_messages').insert([{order_id:cur,sender_id:ME.id,
+    body:'[ФАЙЛ ПЕРЕДАЧИ] '+f.name+' · '+path}]);
+  loadChat(cur);
+};
+
+/* продавец отмечает, что данные переданы */
+window.sent=async function(id){
+  if(!confirm('Отметить, что данные переданы покупателю? Не забудь приложить видео передачи в чат — это твоя защита в споре.'))return;
+  const {error}=await sb.from('orders').update({status:'DATA_TRANSFERRED'}).eq('id',id);
+  if(error){alert('Не удалось: '+error.message);return}
+  loadMyOrders();
+};
 
 /* ===== СПОР: реальная смена статуса + заявление в чат сделки ===== */
 let dcur=null;
