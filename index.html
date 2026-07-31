@@ -25,7 +25,7 @@
 <meta name="twitter:image" content="https://dousheng34.github.io/tenge-gg-site/moon.png">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%2312100e'/%3E%3Ctext x='32' y='45' font-size='38' font-family='Georgia,serif' fill='%23fdfcfa' text-anchor='middle'%3E%E2%82%B8%3C/text%3E%3C/svg%3E">
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"OnlineStore","name":"tenge.gg","url":"https://tenge.gg/","description":"Игровой маркетплейс Казахстана: донат, аккаунты и игровая валюта через Kaspi QR.","areaServed":"KZ","currenciesAccepted":"KZT","paymentAccepted":"Kaspi QR, Kaspi Gold, банковская карта","address":{"@type":"PostalAddress","addressCountry":"KZ","addressLocality":"Алматы"},"aggregateRating":{"@type":"AggregateRating","ratingValue":"4.9","reviewCount":"312","bestRating":"5"}}
+{"@context":"https://schema.org","@type":"OnlineStore","name":"tenge.gg","url":"https://tenge.gg/","description":"Игровой маркетплейс Казахстана: донат, аккаунты и игровая валюта через Kaspi QR.","areaServed":"KZ","currenciesAccepted":"KZT","paymentAccepted":"Kaspi QR, Kaspi Gold, банковская карта","address":{"@type":"PostalAddress","addressCountry":"KZ","addressLocality":"Алматы"}}
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
@@ -616,7 +616,7 @@ footer{border-top:1px solid var(--line);padding:66px 0 34px;position:relative;z-
   </section>
 
   <!-- ===== ОТЗЫВЫ ===== -->
-  <section id="reviews" style="padding-top:0">
+  <section id="reviews" style="padding-top:0;display:none">
     <div class="sec-head reveal">
       <div>
         <div class="sec-tag">Отзывы</div>
@@ -625,11 +625,11 @@ footer{border-top:1px solid var(--line);padding:66px 0 34px;position:relative;z-
       <p class="sec-sub">Отзывы оставляют только те, у кого сделка реально закрыта — накрутить нельзя.</p>
     </div>
     <div class="rating-big reveal">
-      <div><div class="rb-n">4.9</div><div class="rb-t">средняя оценка</div></div>
+      <div><div class="rb-n" id="rbAvg">—</div><div class="rb-t">средняя оценка</div></div>
       <div style="width:1px;height:46px;background:var(--line)"></div>
-      <div><div class="rb-n" data-count="312">0</div><div class="rb-t">отзывов после сделок</div></div>
+      <div><div class="rb-n" id="rbCount">0</div><div class="rb-t">отзывов после сделок</div></div>
       <div style="width:1px;height:46px;background:var(--line)"></div>
-      <div><div class="rb-n" data-count="98" data-suffix="%">0%</div><div class="rb-t">сделок без спора</div></div>
+      <div><div class="rb-n" id="rbClean">—</div><div class="rb-t">сделок без спора</div></div>
     </div>
     <div class="revs" id="revsGrid"></div>
   </section>
@@ -867,111 +867,129 @@ document.getElementById('earlyForm').addEventListener('submit',async e=>{
 
 <div class="toasts" id="toasts"></div>
 <script>
-/* ========== ГОРЯЧИЕ ЛОТЫ ========== */
+/* ============================================================
+   РЕАЛЬНЫЕ ДАННЫЕ. Никаких выдуманных цифр:
+   пусто в базе -> блок просто не показывается.
+   ============================================================ */
 const CHK='<svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>';
 const STAR='<svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.2 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8L12 2z"/></svg>';
-const kzt=n=>n.toLocaleString('ru-RU')+' \u20b8';
+const kzt=n=>(+n).toLocaleString('ru-RU')+' \u20b8';
+const ini2=t=>(t||'?').replace(/[^A-Za-zА-Яа-я0-9]/g,'').slice(0,2).toUpperCase();
+const GMAP={pubg:'PUBG Mobile',freefire:'Free Fire',mlbb:'Mobile Legends',genshin:'Genshin Impact',roblox:'Roblox',subs:'Подписки'};
+const CATMAP={donate:'Донат',accounts:'Аккаунты',currency:'Валюта',subs:'Подписки'};
 
-const LOTS=[
- {cat:'Донат',game:'PUBG Mobile',t:'660 UC — мгновенно по игровому ID',p:4990,old:5900,tags:['Автовыдача','2 мин','Без входа в аккаунт'],s:'Aidos_KZ',r:4.9,d:1284,hot:1,id:'1'},
- {cat:'Донат',game:'Free Fire',t:'1080 алмазов + недельный пропуск',p:6450,old:7400,tags:['Автовыдача','3 мин','Гарантия 24ч'],s:'DiamondShopKZ',r:5.0,d:876,hot:1,id:'2'},
- {cat:'Аккаунты',game:'PUBG Mobile',t:'Аккаунт: Conqueror, 27 скинов, M416 Glacier',p:78000,old:0,tags:['Видео-передача','Полная почта','Смена данных'],s:'Almaz_Trade',r:4.8,d:213,hot:0,id:'1'},
- {cat:'Донат',game:'Mobile Legends',t:'570 алмазов по ID (Moonton официально)',p:5200,old:0,tags:['Автовыдача','5 мин','Чек Kaspi'],s:'MLBB_Astana',r:4.9,d:641,hot:0,id:'3'},
- {cat:'Валюта',game:'Roblox',t:'1700 Robux — на аккаунт без пароля',p:7900,old:8900,tags:['Через геймпасс','10 мин','Безопасно'],s:'RobuxKZ',r:4.7,d:398,hot:1,id:'2'},
- {cat:'Подписки',game:'Подписки',t:'Discord Nitro 1 месяц + 2 буста',p:3400,old:4200,tags:['Ключ активации','Мгновенно','Гарантия 30д'],s:'NitroPoint',r:5.0,d:1502,hot:0,id:'3'},
- {cat:'Донат',game:'Genshin Impact',t:'Благословение Полой Луны (30 дней)',p:4100,old:0,tags:['По UID','7 мин','Любой сервер'],s:'TeyvatStore',r:4.9,d:305,hot:0,id:'1'},
- {cat:'Аккаунты',game:'Genshin Impact',t:'AR56, Райдэн C1, Ху Тао, 5 пятизвёздочных',p:145000,old:0,tags:['Видео-передача','Привязка на тебя','Гарантия 14д'],s:'Nurik_Accs',r:5.0,d:97,hot:0,id:'1'}
-];
-const CATS=['Все','Донат','Аккаунты','Валюта','Подписки'];
-let curCat='Все';
+/* ==================== ВИТРИНА: реальные лоты из listings ==================== */
+const lotsGrid=document.getElementById('lotsGrid');
+const lotChips=document.getElementById('lotChips');
+let ALL=[], curCat='Все';
 
 function lotCard(l){
-  const ini=l.s.replace(/[^A-Za-zА-Яа-я]/g,'').slice(0,2).toUpperCase();
-  return `<a class="lot" href="./item.html?id=${l.id}">
+  return `<a class="lot" href="./item.html?id=${encodeURIComponent(l.id)}">
     <div class="lot-top">
       <span class="lot-tag">${l.game}</span>
-      ${l.hot?'<span class="lot-fire">🔥 Хит недели</span>':''}
+      ${l.fresh?'<span class="lot-fire">Новый лот</span>':''}
     </div>
-    <h3>${l.t}</h3>
-    <div class="lot-meta">${l.tags.map(t=>`<span>${t}</span>`).join('')}</div>
+    <h3>${l.title}</h3>
+    ${l.desc?`<div class="lot-meta"><span>${l.desc}</span></div>`:''}
     <div class="lot-seller">
-      <div class="av">${ini}</div>
+      <div class="av">${ini2(l.seller)}</div>
       <div>
-        <div class="sl-name">${l.s} ${CHK}</div>
-        <div class="sl-sub">★ ${l.r.toFixed(1)} · ${l.d} сделок</div>
+        <div class="sl-name">${l.seller}${l.verified?' '+CHK:''}</div>
+        <div class="sl-sub">${l.deals!=null?l.deals+' сделок':'Продавец tenge.gg'}</div>
       </div>
     </div>
     <div class="lot-buy">
-      <div class="lot-price">${kzt(l.p)}${l.old?`<s>${kzt(l.old)}</s>`:''}</div>
+      <div class="lot-price">${kzt(l.price)}</div>
       <span class="lot-go">Купить</span>
     </div>
   </a>`;
 }
 function renderLots(){
-  const arr=curCat==='Все'?LOTS:LOTS.filter(l=>l.cat===curCat);
-  document.getElementById('lotsGrid').innerHTML=arr.slice(0,6).map(lotCard).join('');
+  const arr=curCat==='Все'?ALL:ALL.filter(l=>l.cat===curCat);
+  if(!arr.length){
+    lotsGrid.innerHTML=`<div class="lot" style="cursor:default;align-items:center;text-align:center;padding:38px">
+      <div><div style="font:600 15px Inter;margin-bottom:8px">Пока нет активных лотов</div>
+      <div style="font-size:13px;color:var(--muted)">Первые продавцы уже подключаются. Хочешь быть первым — <a href="./sell.html" style="color:var(--red)">выставь лот</a>.</div></div></div>`;
+    return;
+  }
+  lotsGrid.innerHTML=arr.slice(0,6).map(lotCard).join('');
 }
-document.getElementById('lotChips').innerHTML=CATS.map(c=>
-  `<button class="chip${c===curCat?' on':''}" data-c="${c}">${c}</button>`).join('');
-document.getElementById('lotChips').addEventListener('click',e=>{
+function renderChips(){
+  const cats=['Все',...[...new Set(ALL.map(l=>l.cat))]];
+  lotChips.innerHTML=cats.map(c=>`<button class="chip${c===curCat?' on':''}" data-c="${c}">${c}</button>`).join('');
+  lotChips.style.display=ALL.length?'flex':'none';
+}
+lotChips.addEventListener('click',e=>{
   const b=e.target.closest('.chip'); if(!b)return;
   curCat=b.dataset.c;
-  document.querySelectorAll('#lotChips .chip').forEach(x=>x.classList.toggle('on',x===b));
+  lotChips.querySelectorAll('.chip').forEach(x=>x.classList.toggle('on',x===b));
   renderLots();
 });
-renderLots();
 
-/* подтянуть реальные лоты из Supabase, если таблица есть */
+async function loadLots(){
+  let rows=[];
+  if(window.sb){
+    try{
+      const {data}=await sb.from('listings').select('*').eq('status','active')
+        .order('created_at',{ascending:false}).limit(12);
+      if(data) rows=data;
+    }catch(e){}
+  }
+  const local=JSON.parse(localStorage.getItem('tenge_listings')||'[]');
+  const DAY=86400000, now=Date.now();
+  ALL=[
+    ...rows.map(r=>({id:r.id,game:GMAP[r.game_type]||r.game_type||'tenge.gg',
+      cat:CATMAP[r.category]||r.category||'Донат',title:r.title,desc:r.description||'',
+      price:r.price,seller:r.seller_name||'Продавец KZ',verified:!!r.seller_verified,
+      deals:r.seller_deals!=null?r.seller_deals:null,
+      fresh:r.created_at?(now-new Date(r.created_at).getTime()<3*DAY):false})),
+    ...local.map(l=>({id:l.id,game:GMAP[l.game]||l.game||'tenge.gg',cat:CATMAP[l.cat]||l.cat||'Донат',
+      title:l.title,desc:l.desc||'',price:l.price,seller:l.seller||'Мой лот',verified:false,deals:null,fresh:true}))
+  ];
+  renderChips(); renderLots();
+}
+loadLots();
+
+/* ==================== ОТЗЫВЫ: только реальные ==================== */
 (async()=>{
-  if(!window.sb)return;
+  const sec=document.getElementById('reviews'), grid=document.getElementById('revsGrid');
+  if(!window.sb||!sec)return;
+  let revs=[];
   try{
-    const {data,error}=await sb.from('lots').select('*').limit(6);
-    if(error||!data||!data.length)return;
-    const mapped=data.filter(r=>r.title&&r.price).map(r=>({
-      cat:r.category||'Донат',game:r.game||'tenge.gg',t:r.title,p:+r.price,old:+(r.old_price||0),
-      tags:[r.delivery||'Автовыдача',r.eta||'быстро','Escrow'],s:r.seller||'tenge.gg',
-      r:+(r.rating||4.9),d:+(r.deals||0),hot:!!r.hot,id:r.id||'1'}));
-    if(mapped.length){document.getElementById('lotsGrid').innerHTML=mapped.map(lotCard).join('');}
-  }catch(e){}
+    const {data}=await sb.from('reviews').select('*').order('created_at',{ascending:false}).limit(6);
+    if(data) revs=data;
+  }catch(e){ return; }
+  if(!revs.length) return;                 // нет отзывов -> секции нет
+  const avg=revs.reduce((a,b)=>a+(+b.rating||0),0)/revs.length;
+  document.getElementById('rbAvg').textContent=avg.toFixed(1);
+  document.getElementById('rbCount').textContent=revs.length;
+  const clean=revs.filter(r=>!r.had_dispute).length;
+  document.getElementById('rbClean').textContent=Math.round(clean/revs.length*100)+'%';
+  grid.innerHTML=revs.map(v=>{
+    const stars=Math.max(1,Math.min(5,Math.round(+v.rating||5)));
+    const when=v.created_at?new Date(v.created_at).toLocaleDateString('ru-RU'):'';
+    return `<div class="rev reveal">
+      <div class="rev-head"><div class="av">${ini2(v.author_name)}</div>
+        <div><div class="sl-name">${v.author_name||'Покупатель'}</div>
+        <div class="sl-sub">${[v.city,v.subject].filter(Boolean).join(' · ')}</div></div></div>
+      <div class="stars-r">${STAR.repeat(stars)}</div>
+      <p>${(v.text||'').replace(/</g,'&lt;')}</p>
+      <div class="rev-foot"><span class="rev-ver">${CHK} Сделка подтверждена</span><span>${when}</span></div>
+    </div>`;
+  }).join('');
+  sec.style.display='';
+  grid.querySelectorAll('.reveal').forEach(el=>el.classList.add('in'));
 })();
 
-/* ========== ОТЗЫВЫ ========== */
-const REVS=[
- {n:'Ержан Сапаров',c:'Алматы',txt:'Брал 660 UC ночью в 2:40 — пришло через минуту прямо по ID, даже заходить в аккаунт не пришлось. Kaspi QR отсканировал и всё. По сравнению с FunPay разница по цене реально ощутимая.',r:5,d:'3 дня назад',what:'PUBG Mobile · 660 UC'},
- {n:'Дана Ким',c:'Астана',txt:'Покупала аккаунт Genshin. Продавец записал видео передачи, всё привязал на мою почту. Когда засомневалась — открыла спор, арбитр ответил через 6 минут и помог довести до конца. Деньги висели на escrow, это успокаивает.',r:5,d:'неделю назад',what:'Genshin Impact · аккаунт AR56'},
- {n:'Санжар Т.',c:'Шымкент',txt:'Продаю тут алмазы FF. Выплата на Kaspi пришла в тот же день, комиссия 5% вместо 15% — на моих объёмах это плюс 40 тысяч в месяц. Единственное, хочу приложение, а не сайт.',r:4,d:'2 недели назад',what:'Продавец · 87 сделок'},
- {n:'Мадияр Жумабек',c:'Караганда',txt:'Robux зашли через геймпасс, пароль не спрашивали — это главное. Поддержка в телеге объяснила шаги, всё по-человечески на русском.',r:5,d:'5 дней назад',what:'Roblox · 1700 Robux'},
- {n:'Алина В.',c:'Актобе',txt:'Nitro активировался сразу, ключ рабочий. Чек в Kaspi остался — для меня это уже показатель, что не кидок.',r:5,d:'4 дня назад',what:'Discord Nitro · 1 месяц'},
- {n:'Бекзат Оспанов',c:'Тараз',txt:'Первый раз брал ML алмазы, немного тупил с ID. Написал в чат — продавец подсказал где посмотреть. Пришло за 4 минуты.',r:5,d:'сегодня',what:'Mobile Legends · 570 алмазов'}
-];
-document.getElementById('revsGrid').innerHTML=REVS.map((v,i)=>{
-  const ini=v.n.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
-  return `<div class="rev reveal" data-d="${i%3}">
-    <div class="rev-head">
-      <div class="av">${ini}</div>
-      <div>
-        <div class="sl-name">${v.n}</div>
-        <div class="sl-sub">${v.c} · ${v.what}</div>
-      </div>
-    </div>
-    <div class="stars-r">${STAR.repeat(v.r)}</div>
-    <p>${v.txt}</p>
-    <div class="rev-foot">
-      <span class="rev-ver">${CHK} Сделка подтверждена</span>
-      <span>${v.d}</span>
-    </div>
-  </div>`;
-}).join('');
-
-/* ========== FAQ ========== */
+/* ==================== FAQ ==================== */
 const FAQ=[
  ['Как проходит оплата через Kaspi QR?','Ты нажимаешь «Купить», сайт показывает QR-код. Сканируешь его камерой в приложении Kaspi.kz и подтверждаешь платёж. Деньги уходят не продавцу напрямую, а на защищённый счёт сделки (escrow) и разблокируются только после того, как ты подтвердишь получение товара.'],
- ['Что если продавец не выдал товар?','Нажимаешь «Открыть спор» в личном кабинете. Сделка замораживается, арбитр tenge.gg смотрит переписку и видеозапись передачи. Если продавец не прав — деньги возвращаются на твою карту Kaspi в течение 1–3 рабочих дней. Среднее время реакции арбитра — 4 минуты.'],
- ['Почему комиссия 5%, а не 15% как у других?','Мы работаем внутри Казахстана: одна валюта, один платёжный провайдер, никаких конвертаций и офшорных прослоек. Экономия на инфраструктуре уходит продавцам, а не в маржу площадки. Для первых 100 продавцов комиссия 0% на первый месяц.'],
- ['Безопасно ли покупать аккаунт?','Передача аккаунта обязательно записывается на видео: видно смену почты, пароля и привязок. Запись хранится у нас 90 дней. Если продавец попытается вернуть аккаунт через восстановление — у тебя есть доказательство, и мы блокируем его выплату и профиль.'],
+ ['Что если продавец не выдал товар?','Нажимаешь «Открыть спор» в личном кабинете. Сделка замораживается, арбитр tenge.gg смотрит переписку и видеозапись передачи. Если продавец не прав — деньги возвращаются на твою карту Kaspi.'],
+ ['Почему комиссия 5%, а не 15% как у других?','Мы работаем внутри Казахстана: одна валюта, один платёжный провайдер, никаких конвертаций и офшорных прослоек. Экономия уходит продавцам, а не в маржу площадки. Для первых 100 продавцов комиссия 0% на первый месяц.'],
+ ['Безопасно ли покупать аккаунт?','Передача аккаунта обязательно записывается на видео: видно смену почты, пароля и привязок. Если продавец попытается вернуть аккаунт через восстановление — у тебя есть доказательство, и мы блокируем его выплату и профиль.'],
  ['Нужно ли давать пароль от своего игрового аккаунта?','Для доната — нет. UC, алмазы и Robux заходят по игровому ID или через геймпасс, вход в аккаунт не требуется. Никогда не передавай пароль, если продавец просит его для обычного доната — сразу пиши арбитру.'],
- ['Вы официально зарегистрированы?','Да, площадка работает от ТОО, зарегистрированного в Республике Казахстан. По запросу выдаём договор и фискальный чек. Это значит, что спор можно довести не только до арбитра площадки, но и до казахстанского суда — в отличие от офшорных сервисов.'],
- ['Когда открывается доступ?','Сейчас идёт закрытый альфа-тест. Оставь Telegram или email в блоке «Ранний доступ» — мы открываем аккаунты волнами по 50 человек и пишем лично. Первые 100 продавцов получают значок «Основатель» навсегда.']
+ ['Вы официально зарегистрированы?','Да, площадка работает от ТОО, зарегистрированного в Республике Казахстан. По запросу выдаём договор и фискальный чек — спор можно довести не только до арбитра площадки, но и до казахстанского суда.'],
+ ['Когда открывается доступ?','Сейчас идёт закрытый альфа-тест. Оставь Telegram или email в блоке «Ранний доступ» — мы открываем аккаунты волнами и пишем лично. Первые 100 продавцов получают значок «Основатель» навсегда.']
 ];
 document.getElementById('faqList').innerHTML=FAQ.map(([q,a])=>
  `<div class="fq"><button class="fq-q">${q}</button><div class="fq-a"><p>${a}</p></div></div>`).join('');
@@ -983,43 +1001,53 @@ document.getElementById('faqList').addEventListener('click',e=>{
   if(!isOpen){item.classList.add('open');a.style.maxHeight=a.scrollHeight+'px';}
 });
 
-/* ========== ОНЛАЙН-СЧЁТЧИК ========== */
+/* ==================== РЕАЛЬНЫЙ ОНЛАЙН (Supabase Realtime Presence) ==================== */
 (function(){
-  const el=document.getElementById('onlineNum'); if(!el)return;
-  let n=180+Math.floor(Math.random()*70);
-  const paint=()=>el.textContent=n.toLocaleString('ru-RU');
-  paint();
-  setInterval(()=>{n=Math.max(140,Math.min(320,n+Math.round((Math.random()-.45)*7)));paint()},4200);
+  const pill=document.querySelector('.online-pill'), el=document.getElementById('onlineNum');
+  if(!pill||!el)return;
+  pill.style.display='none';                          // не показываем, пока не знаем правду
+  if(!window.sb)return;
+  let ch;
+  try{
+    const myId=(crypto.randomUUID&&crypto.randomUUID())||String(Math.random());
+    ch=sb.channel('online:site',{config:{presence:{key:myId}}});
+    ch.on('presence',{event:'sync'},()=>{
+      const n=Object.keys(ch.presenceState()).length;
+      el.textContent=n.toLocaleString('ru-RU');
+      pill.style.display=window.innerWidth>=1080?'inline-flex':'none';
+    });
+    ch.subscribe(async st=>{
+      if(st==='SUBSCRIBED') await ch.track({at:new Date().toISOString(),page:'index'});
+    });
+    window.addEventListener('beforeunload',()=>{try{ch.untrack()}catch(e){}});
+  }catch(e){}
 })();
 
-/* ========== ЖИВАЯ ЛЕНТА СДЕЛОК ========== */
+/* ==================== ЖИВАЯ ЛЕНТА: только реальные сделки ==================== */
 (function(){
-  const box=document.getElementById('toasts'); if(!box)return;
-  const FEED=[
-    ['Айдос, Алматы','купил 660 UC · PUBG Mobile','4 990 ₸'],
-    ['Дария, Астана','купила 1080 алмазов · Free Fire','6 450 ₸'],
-    ['Ерасыл, Шымкент','купил Discord Nitro 1 мес','3 400 ₸'],
-    ['Тимур, Караганда','купил 1700 Robux','7 900 ₸'],
-    ['Аружан, Актобе','купила 570 алмазов · MLBB','5 200 ₸'],
-    ['Нурсултан, Атырау','купил аккаунт PUBG Conqueror','78 000 ₸'],
-    ['Мейрам, Костанай','купил Полую Луну · Genshin','4 100 ₸']
-  ];
-  let i=Math.floor(Math.random()*FEED.length);
-  function show(){
-    const [n,w,p]=FEED[i%FEED.length]; i++;
-    const ini=n[0].toUpperCase();
+  const box=document.getElementById('toasts');
+  if(!box||!window.sb)return;
+  const seen=new Set();
+  function toast(o){
+    if(!o||seen.has(o.id))return; seen.add(o.id);
+    const who=o.buyer_name||'Покупатель';
+    const what=o.listing_title?('купил '+o.listing_title):'оформил сделку';
     const el=document.createElement('div');
     el.className='toast';
-    el.innerHTML=`<div class="av">${ini}</div><div><div class="tt">${n}</div><div class="ts">${w} · только что</div></div><div class="tp">${p}</div>`;
+    el.innerHTML=`<div class="av">${ini2(who)}</div><div><div class="tt">${who}</div>
+      <div class="ts">${what}</div></div><div class="tp">${o.escrow_amount?kzt(o.escrow_amount):''}</div>`;
     box.appendChild(el);
     requestAnimationFrame(()=>el.classList.add('in'));
-    setTimeout(()=>{el.classList.remove('in');setTimeout(()=>el.remove(),600)},5200);
-    setTimeout(show,7000+Math.random()*7000);
+    setTimeout(()=>{el.classList.remove('in');setTimeout(()=>el.remove(),600)},6000);
   }
-  setTimeout(show,4500);
+  try{
+    sb.channel('orders-feed')
+      .on('postgres_changes',{event:'INSERT',schema:'public',table:'orders'},p=>toast(p.new))
+      .subscribe();
+  }catch(e){}
 })();
 
-/* новые .reveal блоки (отзывы рендерятся из JS) */
+/* новые .reveal блоки */
 (function(){
   const io2=new IntersectionObserver(es=>es.forEach(e=>{
     if(e.isIntersecting){e.target.classList.add('in');io2.unobserve(e.target)}
