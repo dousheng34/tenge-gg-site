@@ -440,11 +440,16 @@ footer{border-top:1px solid var(--line);padding:66px 0 34px;position:relative;z-
 /* ===== ЧИТАЕМОСТЬ ТЕКСТА НАД ЛУНОЙ =====
    Подзаголовок и кикер тонули в диске луны. Мягкая вуаль цвета бумаги
    поднимает контраст, но саму луну почти не приглушает. */
-.hero-inner::before{content:'';position:absolute;inset:-4% -6%;z-index:-1;pointer-events:none;
-  background:radial-gradient(ellipse 58% 52% at 50% 54%,
-    rgba(253,252,250,.88) 0%, rgba(253,252,250,.62) 42%, rgba(253,252,250,0) 74%)}
-.hero p{color:#5c574f;position:relative}
-.hero-kicker{position:relative}
+/* Подложку кладём только под сами строки текста, а не на весь диск луны:
+   так подзаголовок читается, а луна остаётся плотной. */
+.hero p{color:#443f39;position:relative;padding:12px 26px;border-radius:60px;
+  background:radial-gradient(ellipse at center,
+    rgba(253,252,250,.93) 0%, rgba(253,252,250,.86) 52%, rgba(253,252,250,0) 100%);
+  text-shadow:0 0 10px rgba(253,252,250,.9)}
+.hero-kicker{position:relative;padding:6px 16px;border-radius:40px;
+  background:radial-gradient(ellipse at center,rgba(253,252,250,.9) 0%,rgba(253,252,250,0) 100%)}
+.hero-stats .hstat{position:relative;padding:6px 10px;border-radius:30px;
+  background:radial-gradient(ellipse at center,rgba(253,252,250,.85) 0%,rgba(253,252,250,0) 100%)}
 
 /* ===== ПРОИЗВОДИТЕЛЬНОСТЬ ===== */
 #lots,#how,#reviews,#faq,#security,#early{content-visibility:auto;contain-intrinsic-size:1px 700px}
