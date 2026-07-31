@@ -232,13 +232,23 @@ try{window.sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);}catc
   <div class="drop" id="drop">
     <div class="i">🎥</div>
     <div class="t">Загрузить видеодоказательство</div>
-    <div class="s">Непрерывная запись получения · MP4 до 500 МБ</div>
+    <div class="s">Непрерывная запись получения · MP4/MOV/WebM до 50 МБ</div>
     <input type="file" id="dfile" accept="video/*" hidden>
   </div>
   <div class="fok" id="dfok"></div>
   <textarea class="drs" id="drs" rows="3" placeholder="Опиши проблему: что не так с товаром..."></textarea>
   <div class="dbtns"><button class="dsend" id="dsend" disabled>Отправить арбитру</button>
     <button class="dcancel" id="dcancel">Отмена</button></div>
+</div></div>
+
+<div class="dbg" id="rbg"><div class="dmod">
+  <h2>★ Отзыв о сделке</h2>
+  <p class="sb" id="rinfo"></p>
+  <div id="rstars" style="display:flex;gap:8px;margin:14px 0;font-size:30px;cursor:pointer;user-select:none"></div>
+  <textarea class="drs" id="rtext" rows="4" placeholder="Как прошла сделка? Быстро ли выдали товар, как общался продавец (минимум 10 символов)"></textarea>
+  <div class="fok" id="rok" style="display:none"></div>
+  <div class="dbtns"><button class="dsend" id="rsend" disabled>Опубликовать отзыв</button>
+    <button class="dcancel" id="rcancel">Отмена</button></div>
 </div></div>
 
 <footer>
@@ -281,6 +291,7 @@ sb&&sb.auth.onAuthStateChange((e)=>{ if(e==='SIGNED_OUT') location.replace('./au
 /* демо-сделки удалены: показываем только реальные заказы из Supabase */
 const ORDERS=[];   // заполняется реальными заказами из Supabase
 const MYLOTS=[];   // заполняется моими лотами из Supabase
+const REVIEWED=new Set();   // заказы, по которым отзыв уже оставлен
 const SM={FUNDS_HOLD:['t-hold','ОПЛАЧЕНО'],DATA_TRANSFERRED:['t-wait','ПРОВЕРКА 24Ч'],
   COMPLETED:['t-done','ЗАВЕРШЕНО'],DISPUTE:['t-disp','СПОР'],REFUNDED:['t-wait','ВОЗВРАТ']};
 
@@ -306,6 +317,10 @@ function oCard(o,act){
       <button class="b-chat" onclick="openChat('${o.id}')">💬 Чат сделки</button>
       <button class="b-ok" onclick="conf('${o.id}')">✓ Подтвердить получение</button>
       <button class="b-dsp" onclick="openD('${o.id}')">⚖️ Открыть спор</button></div>`:''}
+    ${o.status==='COMPLETED'?`<div class="oact">
+      <button class="b-chat" onclick="openChat('${o.id}')">💬 Чат сделки</button>
+      ${REVIEWED.has(o.id)?'<button class="b-ok" disabled style="opacity:.5">★ Отзыв оставлен</button>'
+        :`<button class="b-ok" onclick="openRev('${o.id}')">★ Оставить отзыв</button>`}</div>`:''}
   </div>`;
 }
 function lCard(l){
@@ -350,6 +365,10 @@ async function loadMyOrders(){
       ts:new Date(o.created_at).getTime()
     }));
     ORDERS.length=0; mapped.forEach(m=>ORDERS.push(m));
+
+    /* по каким сделкам отзыв уже есть */
+    const {data:rv}=await sb.from('reviews').select('order_id').eq('author_id',ME.id);
+    REVIEWED.clear(); (rv||[]).forEach(r=>REVIEWED.add(r.order_id));
 
     /* мои лоты как продавца */
     const {data:mine}=await sb.from('listings').select('*')
@@ -450,14 +469,61 @@ up();
 $('dsend').onclick=async()=>{
   if(!dcur||!window.sb||!ME)return;
   const txt=$('drs').value.trim();
+  const f=$('dfile').files[0];
   $('dsend').disabled=true;$('dsend').textContent='Отправляем…';
+  let fileNote='';
+  if(f){
+    if(f.size>52428800){$('dsend').disabled=false;$('dsend').textContent='Отправить арбитру';alert('Файл больше 50 МБ. Сожми видео или вырежи ключевой момент.');return}
+    const path=dcur+'/'+Date.now()+'_'+f.name.replace(/[^\w.\-]/g,'_');
+    $('dsend').textContent='Загружаем видео…';
+    const {error:upErr}=await sb.storage.from('evidence').upload(path,f,{upsert:false});
+    if(upErr){$('dsend').disabled=false;$('dsend').textContent='Отправить арбитру';alert('Видео не загрузилось: '+upErr.message);return}
+    fileNote='\n[ДОКАЗАТЕЛЬСТВО] '+path;
+  }
   const {error}=await sb.from('orders').update({status:'DISPUTE'}).eq('id',dcur);
   if(error){$('dsend').disabled=false;$('dsend').textContent='Отправить арбитру';alert('Не удалось открыть спор: '+error.message);return}
-  if(txt){try{await sb.from('trade_messages').insert([{order_id:dcur,sender_id:ME.id,body:'[ЗАЯВЛЕНИЕ В СПОР] '+txt}]);}catch(e){}}
+  if(txt||fileNote){try{await sb.from('trade_messages').insert([{order_id:dcur,sender_id:ME.id,body:'[ЗАЯВЛЕНИЕ В СПОР] '+txt+fileNote}]);}catch(e){}}
   $('dsend').textContent='✓ Отправлено';
-  setTimeout(()=>{dc();alert('Спор открыт, заказ заморожен. Арбитр видит переписку и заявление.');loadMyOrders()},600);
+  setTimeout(()=>{dc();alert('Спор открыт, заказ заморожен. Арбитр видит переписку'+(f?', заявление и видео.':' и заявление.'));loadMyOrders()},600);
 };
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){cc();dc()}});
+
+/* ===== ОТЗЫВ О ЗАВЕРШЁННОЙ СДЕЛКЕ ===== */
+let rcur=null, rstars=0;
+function paintStars(){
+  $('rstars').innerHTML=[1,2,3,4,5].map(n=>
+    `<span data-n="${n}" style="color:${n<=rstars?'#a98040':'#ddd7cc'}">★</span>`).join('');
+  $('rsend').disabled = !(rstars>0 && $('rtext').value.trim().length>=10);
+}
+$('rstars').onclick=e=>{const s=e.target.closest('[data-n]');if(!s)return;rstars=+s.dataset.n;paintStars()};
+$('rtext').oninput=paintStars;
+window.openRev=function(id){
+  const o=ORDERS.find(x=>x.id===id); if(!o)return;
+  rcur=id; rstars=0; $('rtext').value=''; $('rok').style.display='none';
+  $('rsend').textContent='Опубликовать отзыв';
+  $('rinfo').textContent=o.title+' · продавец '+o.seller;
+  paintStars();
+  $('rbg').classList.add('open');document.body.style.overflow='hidden';
+};
+function rc(){$('rbg').classList.remove('open');document.body.style.overflow=''}
+$('rcancel').onclick=rc;$('rbg').onclick=e=>{if(e.target.id==='rbg')rc()};
+$('rsend').onclick=async()=>{
+  if(!rcur||!ME)return;
+  const o=ORDERS.find(x=>x.id===rcur);
+  $('rsend').disabled=true;$('rsend').textContent='Публикуем…';
+  const {error}=await sb.from('reviews').insert([{
+    order_id:rcur, author_id:ME.id,
+    author_name:(ME.email||'Покупатель').split('@')[0],
+    subject:o?o.title:null, rating:rstars, text:$('rtext').value.trim()
+  }]);
+  if(error){$('rsend').disabled=false;$('rsend').textContent='Опубликовать отзыв';
+    alert('Отзыв не сохранён: '+error.message+'\n\nОтзыв можно оставить только по своей завершённой сделке и только один раз.');return}
+  REVIEWED.add(rcur);
+  $('rok').style.display='block';$('rok').textContent='✓ Спасибо! Отзыв опубликован на главной странице.';
+  $('rsend').textContent='✓ Готово';
+  setTimeout(()=>{rc();loadMyOrders()},1100);
+};
+
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){cc();dc();rc()}});
 
 /* общее */
 window.addEventListener('scroll',()=>{const h=document.documentElement;
