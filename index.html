@@ -437,6 +437,15 @@ footer{border-top:1px solid var(--line);padding:66px 0 34px;position:relative;z-
 .toast .tp{margin-left:auto;font:600 13px 'Playfair Display';white-space:nowrap}
 
 
+/* ===== ЧИТАЕМОСТЬ ТЕКСТА НАД ЛУНОЙ =====
+   Подзаголовок и кикер тонули в диске луны. Мягкая вуаль цвета бумаги
+   поднимает контраст, но саму луну почти не приглушает. */
+.hero-inner::before{content:'';position:absolute;inset:-4% -6%;z-index:-1;pointer-events:none;
+  background:radial-gradient(ellipse 58% 52% at 50% 54%,
+    rgba(253,252,250,.88) 0%, rgba(253,252,250,.62) 42%, rgba(253,252,250,0) 74%)}
+.hero p{color:#5c574f;position:relative}
+.hero-kicker{position:relative}
+
 /* ===== ПРОИЗВОДИТЕЛЬНОСТЬ ===== */
 #lots,#how,#reviews,#faq,#security,#early{content-visibility:auto;contain-intrinsic-size:1px 700px}
 .moon-wrap,.moon,.cursor-glow,.progress{backface-visibility:hidden}
