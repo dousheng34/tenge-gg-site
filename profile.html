@@ -279,8 +279,8 @@ sb&&sb.auth.onAuthStateChange((e)=>{ if(e==='SIGNED_OUT') location.replace('./au
 
 /* данные */
 /* демо-сделки удалены: показываем только реальные заказы из Supabase */
-const ORDERS=JSON.parse(localStorage.getItem('tenge_orders')||'[]');  // локальный кэш, перезаписывается данными из БД
-const MYLOTS=JSON.parse(localStorage.getItem('tenge_listings')||'[]');
+const ORDERS=[];   // заполняется реальными заказами из Supabase
+const MYLOTS=[];   // заполняется моими лотами из Supabase
 const SM={FUNDS_HOLD:['t-hold','ОПЛАЧЕНО'],DATA_TRANSFERRED:['t-wait','ПРОВЕРКА 24Ч'],
   COMPLETED:['t-done','ЗАВЕРШЕНО'],DISPUTE:['t-disp','СПОР'],REFUNDED:['t-wait','ВОЗВРАТ']};
 
@@ -350,6 +350,15 @@ async function loadMyOrders(){
       ts:new Date(o.created_at).getTime()
     }));
     ORDERS.length=0; mapped.forEach(m=>ORDERS.push(m));
+
+    /* мои лоты как продавца */
+    const {data:mine}=await sb.from('listings').select('*')
+      .eq('seller_id',ME.id).order('created_at',{ascending:false});
+    MYLOTS.length=0;
+    (mine||[]).forEach(l=>MYLOTS.push({
+      title:l.title, price:+l.price, ts:Math.floor(new Date(l.created_at).getTime()/1000)
+    }));
+
     render(document.querySelector('.pill.active')?.dataset.t||'buys');
   }catch(e){}
 }
@@ -358,63 +367,95 @@ document.querySelectorAll('.pill').forEach(p=>p.onclick=()=>{
   document.querySelectorAll('.pill').forEach(x=>x.classList.remove('active'));
   p.classList.add('active');render(p.dataset.t)});
 
-window.conf=function(id){
-  const o=ORDERS.find(x=>x.id===id);
-  if(o){o.status='COMPLETED';o.stage=3;localStorage.setItem('tenge_orders',JSON.stringify(ORDERS))}
-  alert('Сделка завершена! Средства отправлены продавцу.');location.reload();
+const esc=s=>String(s||'').replace(/[<>&]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
+
+/* ===== ПОДТВЕРЖДЕНИЕ ПОЛУЧЕНИЯ: реальный апдейт статуса в БД ===== */
+window.conf=async function(id){
+  if(!window.sb||!ME)return;
+  if(!confirm('Подтвердить получение? Деньги уйдут продавцу, отменить будет уже нельзя.'))return;
+  const {error}=await sb.from('orders').update({status:'COMPLETED'}).eq('id',id);
+  if(error){alert('Не удалось подтвердить: '+error.message);return}
+  alert('Сделка завершена. Средства отправлены продавцу.');
+  loadMyOrders();
 };
 
-/* ===== ЧАТ ===== */
-let cur=null;
-const key=i=>'tenge_chat_'+i;
-function seed(o){return [
-  {r:'sys',t:'Заказ #'+o.id+' создан. Средства заморожены (escrow).'},
-  {r:'them',t:'Здравствуйте! Вижу оплату. Напишите ваш игровой ID — отправлю в течение 5 минут.',ts:now()},
-  {r:'sys',t:'⏳ У продавца 24 часа на передачу данных'}]}
-function load(o){let m=JSON.parse(localStorage.getItem(key(o.id))||'null');
-  if(!m){m=seed(o);localStorage.setItem(key(o.id),JSON.stringify(m))}return m}
-function draw(m){$('cbody').innerHTML=m.map(x=>x.r==='sys'?`<div class="bub sys">${x.t}</div>`
-  :`<div class="bub ${x.r==='me'?'me':'them'}">${x.t}<span class="t">${x.ts||''}</span></div>`).join('');
-  $('cbody').scrollTop=$('cbody').scrollHeight}
-window.openChat=function(id){
-  const o=ORDERS.find(x=>x.id===id)||{id,seller:'Продавец',title:''};cur=o.id;
-  $('cn').textContent=o.seller;$('cav').textContent=(o.seller||'P')[0];
-  $('cs').textContent='Заказ #'+o.id+(o.title?' · '+o.title:'');
-  draw(load(o));$('cbg').classList.add('open');document.body.style.overflow='hidden';
+/* ===== ЧАТ СДЕЛКИ: настоящие сообщения из trade_messages + Realtime ===== */
+let cur=null, chatCh=null;
+function bub(m){
+  const t=m.created_at?new Date(m.created_at).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}):'';
+  if(!m.sender_id) return `<div class="bub sys">${esc(m.body)}</div>`;
+  const mine=ME && m.sender_id===ME.id;
+  return `<div class="bub ${mine?'me':'them'}">${esc(m.body)}<span class="t">${t}</span></div>`;
+}
+function drawAll(list){
+  $('cbody').innerHTML = list.length ? list.map(bub).join('')
+    : '<div class="bub sys">Сообщений пока нет. Напиши второй стороне первым — переписка видна только вам двоим и арбитру.</div>';
+  $('cbody').scrollTop=$('cbody').scrollHeight;
+}
+async function loadChat(id){
+  const {data,error}=await sb.from('trade_messages').select('*').eq('order_id',id).order('created_at',{ascending:true});
+  if(error){drawAll([]);return}
+  drawAll(data||[]);
+}
+window.openChat=async function(id){
+  if(!window.sb)return;
+  const o=ORDERS.find(x=>x.id===id)||{id,seller:'Продавец',title:''};
+  cur=id;
+  $('cn').textContent=o.seller;
+  $('cav').textContent=(o.seller||'P')[0].toUpperCase();
+  $('cs').textContent='Заказ #'+String(id).slice(0,8)+(o.title?' · '+o.title:'');
+  $('cbody').innerHTML='<div class="bub sys">Загружаем переписку…</div>';
+  $('cbg').classList.add('open');document.body.style.overflow='hidden';
+  await loadChat(id);
+  if(chatCh){try{sb.removeChannel(chatCh)}catch(e){}}
+  chatCh=sb.channel('chat:'+id)
+    .on('postgres_changes',{event:'INSERT',schema:'public',table:'trade_messages',filter:'order_id=eq.'+id},
+        ()=>loadChat(id))
+    .subscribe();
 };
-function cc(){$('cbg').classList.remove('open');document.body.style.overflow=''}
+function cc(){
+  $('cbg').classList.remove('open');document.body.style.overflow='';
+  if(chatCh){try{sb.removeChannel(chatCh)}catch(e){}chatCh=null}
+}
 $('cx').onclick=cc;$('cbg').onclick=e=>{if(e.target.id==='cbg')cc()};
-function send(){
-  const i=$('cinp'),v=i.value.trim();if(!v||!cur)return;
-  const m=JSON.parse(localStorage.getItem(key(cur))||'[]');
-  m.push({r:'me',t:v,ts:now()});localStorage.setItem(key(cur),JSON.stringify(m));i.value='';draw(m);
-  setTimeout(()=>{
-    const m2=JSON.parse(localStorage.getItem(key(cur))||'[]');
-    const hasId=/\d{5,}/.test(v);
-    m2.push({r:'them',t:hasId?'Принял ID! Отправляю прямо сейчас, запишите видео получения 🎥':'Хорошо, понял вас. Остаюсь на связи.',ts:now()});
-    if(hasId)m2.push({r:'sys',t:'✅ Продавец подтвердил передачу. Проверьте товар и нажмите «Подтвердить получение».'});
-    localStorage.setItem(key(cur),JSON.stringify(m2));draw(m2);
-  },1300);
+async function send(){
+  const i=$('cinp'),v=i.value.trim();
+  if(!v||!cur||!ME)return;
+  i.value='';
+  const {error}=await sb.from('trade_messages').insert([{order_id:cur,sender_id:ME.id,body:v}]);
+  if(error){alert('Сообщение не отправлено: '+error.message);i.value=v;return}
+  loadChat(cur);
 }
 $('csend').onclick=send;$('cinp').onkeydown=e=>{if(e.key==='Enter')send()};
 
-/* ===== СПОР ===== */
-let dcur=null,hasF=false;
-window.openD=function(id){const o=ORDERS.find(x=>x.id===id);dcur=id;
-  $('dinfo').textContent=(o?o.title+' · ':'')+'заказ #'+id;
-  $('dbg').classList.add('open');document.body.style.overflow='hidden'};
+/* ===== СПОР: реальная смена статуса + заявление в чат сделки ===== */
+let dcur=null;
+window.openD=function(id){
+  const o=ORDERS.find(x=>x.id===id);dcur=id;
+  $('dinfo').textContent=(o?o.title+' · ':'')+'заказ #'+String(id).slice(0,8);
+  $('dbg').classList.add('open');document.body.style.overflow='hidden';
+};
 function dc(){$('dbg').classList.remove('open');document.body.style.overflow=''}
 $('dcancel').onclick=dc;$('dbg').onclick=e=>{if(e.target.id==='dbg')dc()};
 $('drop').onclick=()=>$('dfile').click();
-$('dfile').onchange=()=>{if($('dfile').files.length){hasF=true;$('dfok').style.display='block';
-  $('dfok').textContent='✓ Загружено: '+$('dfile').files[0].name;up()}};
+$('dfile').onchange=()=>{
+  if($('dfile').files.length){
+    $('dfok').style.display='block';
+    $('dfok').textContent='Файл выбран: '+$('dfile').files[0].name+' — загрузка видео появится вместе с хранилищем, пока опиши всё текстом';
+  }
+};
 $('drs').oninput=up;
-function up(){$('dsend').disabled=!(hasF&&$('drs').value.trim().length>=10)}
-$('dsend').onclick=()=>{
-  const o=ORDERS.find(x=>x.id===dcur);
-  if(o){o.status='DISPUTE';localStorage.setItem('tenge_orders',JSON.stringify(ORDERS))}
-  $('dsend').textContent='✓ Отправлено';$('dsend').disabled=true;
-  setTimeout(()=>{dc();alert('Спор #DSP-'+Math.floor(Math.random()*900+100)+' передан арбитру. Видео проверят в течение 2 часов. Средства заморожены.');location.reload()},700);
+function up(){$('dsend').disabled=$('drs').value.trim().length<10}
+up();
+$('dsend').onclick=async()=>{
+  if(!dcur||!window.sb||!ME)return;
+  const txt=$('drs').value.trim();
+  $('dsend').disabled=true;$('dsend').textContent='Отправляем…';
+  const {error}=await sb.from('orders').update({status:'DISPUTE'}).eq('id',dcur);
+  if(error){$('dsend').disabled=false;$('dsend').textContent='Отправить арбитру';alert('Не удалось открыть спор: '+error.message);return}
+  if(txt){try{await sb.from('trade_messages').insert([{order_id:dcur,sender_id:ME.id,body:'[ЗАЯВЛЕНИЕ В СПОР] '+txt}]);}catch(e){}}
+  $('dsend').textContent='✓ Отправлено';
+  setTimeout(()=>{dc();alert('Спор открыт, заказ заморожен. Арбитр видит переписку и заявление.');loadMyOrders()},600);
 };
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){cc();dc()}});
 
