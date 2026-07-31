@@ -350,12 +350,32 @@ fp.oninput=uc;fv.onchange=uc;
 
 $('pub').onclick=async()=>{
   const g=GAMES.find(x=>x.id===sel.game);
-  const lot={id:Date.now(),game:sel.game,cat:sel.cat,icon:g.ic,title:ft.value.trim(),desc:fd.value.trim(),
-    price:Math.round(+fp.value),seller:'Aseka',ts:Math.floor(Date.now()/1000),mine:true};
-  const ls=JSON.parse(localStorage.getItem('tenge_listings')||'[]');ls.push(lot);
-  localStorage.setItem('tenge_listings',JSON.stringify(ls));
-  if(window.sb){try{await sb.from('listings').insert([{game_type:lot.game,category:lot.cat,
-    title:lot.title,description:lot.desc,price:lot.price,status:'active'}]);}catch(e){}}
+  const btn=$('pub');
+  if(!window.sb){alert('База недоступна, попробуй позже');return}
+
+  /* публиковать лот может только вошедший: политика RLS требует seller_id = auth.uid() */
+  const {data:ses}=await sb.auth.getSession();
+  if(!ses||!ses.session){
+    alert('Чтобы выставить лот, нужно войти в аккаунт — так покупатель видит, с кем имеет дело, а выплата уходит на твою Kaspi.');
+    location.href='./auth.html?next=sell';
+    return;
+  }
+  const me=ses.session.user;
+  const nick=(me.email||'Продавец').split('@')[0];
+
+  btn.disabled=true; btn.textContent='Публикуем…';
+
+  /* профиль продавца — чтобы в каталоге был ник, а не «Продавец KZ» */
+  try{ await sb.from('sellers').upsert([{user_id:me.id,nickname:nick}],{onConflict:'user_id'}); }catch(e){}
+
+  const {error}=await sb.from('listings').insert([{
+    game_type:sel.game, category:sel.cat,
+    title:ft.value.trim(), description:fd.value.trim(),
+    price:Math.round(+fp.value), status:'active', seller_id:me.id
+  }]);
+  btn.disabled=false; btn.textContent='Опубликовать лот';
+  if(error){ alert('Лот не опубликован: '+error.message); return; }
+
   [1,2,3].forEach(i=>{$('s'+i).classList.remove('on');$('p'+i).classList.add('ok');$('p'+i).classList.remove('on')});
   $('l1').classList.add('done');$('l2').classList.add('done');
   $('done').classList.add('on');
