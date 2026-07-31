@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Продать лот — tenge.gg</title>
+<link rel="stylesheet" href="./moon.css">
 <link rel="manifest" href="./manifest.json">
 <meta name="theme-color" content="#fdfcfa">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -135,7 +136,7 @@ try{window.sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);}catc
 /* успех */
 .done{display:none;text-align:center;padding:40px 10px}
 .done.on{display:block;animation:sIn .7s var(--ease)}
-.done .moon{width:92px;height:92px;margin:0 auto 22px;border-radius:50%;background:url('moon.png') center/cover;
+.done .moon{width:92px;height:92px;margin:0 auto 22px;border-radius:50%;background:var(--moon-img) center/cover;
   animation:float 5s ease-in-out infinite,spin 90s linear infinite;box-shadow:0 22px 50px rgba(18,16,14,.18)}
 @keyframes spin{to{rotate:360deg}}
 .done h2{font-size:30px}

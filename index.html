@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>tenge.gg — Игровой маркетплейс Казахстана</title>
+<link rel="stylesheet" href="./moon.css">
 <link rel="manifest" href="./manifest.json">
 <meta name="theme-color" content="#fdfcfa">
 <meta name="description" content="Донат, аккаунты и игровая валюта через Kaspi QR. Комиссия 5%. Защита ТОО.">
@@ -69,13 +70,13 @@ h1,h2,h3,.serif{font-family:'Playfair Display',serif;letter-spacing:-0.025em;lin
   60%{transform:translate(-2%,-2%)}80%{transform:translate(3%,3%)}100%{transform:translate(0,0)}}
 
 /* ===== прогресс скролла ===== */
-.progress{position:fixed;top:0;left:0;height:2px;width:0;z-index:9999;
-  background:linear-gradient(90deg,var(--ink),var(--red));transition:width .1s linear}
+.progress{position:fixed;top:0;left:0;height:2px;width:100%;z-index:9999;transform:scaleX(0);transform-origin:0 50%;
+  background:linear-gradient(90deg,var(--ink),var(--red));will-change:transform}
 
 /* ===== курсор-свет ===== */
-.cursor-glow{position:fixed;width:340px;height:340px;border-radius:50%;pointer-events:none;z-index:1;
+.cursor-glow{position:fixed;top:0;left:0;width:340px;height:340px;border-radius:50%;pointer-events:none;z-index:1;
   background:radial-gradient(circle,rgba(184,50,39,.055),transparent 65%);
-  transform:translate(-50%,-50%);transition:opacity .4s;opacity:0}
+  transform:translate3d(-50%,-50%,0);transition:opacity .4s;opacity:0;will-change:transform}
 body:hover .cursor-glow{opacity:1}
 
 /* ===== HEADER ===== */
@@ -165,20 +166,20 @@ header.scrolled{border-color:var(--line);box-shadow:0 6px 30px rgba(18,16,14,.05
 @keyframes halo{0%,100%{transform:scale(1);opacity:.85}50%{transform:scale(1.14);opacity:.45}}
 /* сама луна */
 .moon{position:relative;width:64%;aspect-ratio:1;border-radius:50%;
-  background:url('moon.png') center/cover;
+  background:var(--moon-img) center/cover;
   opacity:.92;
   box-shadow:
-    inset -30px -24px 66px rgba(0,0,0,.24),
-    inset 12px 14px 44px rgba(255,255,255,.14),
-    0 44px 110px rgba(18,16,14,.15);
+    inset -26px -20px 52px rgba(0,0,0,.24),
+    inset 10px 12px 34px rgba(255,255,255,.14),
+    0 30px 60px rgba(18,16,14,.13);
   animation:moonFloat 9s ease-in-out infinite, moonSpin 180s linear infinite;
   will-change:transform}
 @keyframes moonFloat{0%,100%{translate:0 0}50%{translate:0 -22px}}
 @keyframes moonSpin{to{rotate:360deg}}
 /* терминатор (фаза-тень, мягко плывёт) */
 .moon-phase{position:absolute;width:64%;aspect-ratio:1;border-radius:50%;pointer-events:none;
-  background:radial-gradient(circle at 78% 32%,transparent 30%,rgba(18,16,14,.22) 78%);
-  animation:phase 14s ease-in-out infinite;mix-blend-mode:multiply}
+  background:radial-gradient(circle at 78% 32%,transparent 30%,rgba(18,16,14,.30) 78%);
+  animation:phase 14s ease-in-out infinite}
 @keyframes phase{0%,100%{opacity:.5;transform:translateX(0)}50%{opacity:.85;transform:translateX(-4%)}}
 /* блик */
 .moon-shine{position:absolute;width:64%;aspect-ratio:1;border-radius:50%;pointer-events:none;
@@ -435,6 +436,20 @@ footer{border-top:1px solid var(--line);padding:66px 0 34px;position:relative;z-
 .toast .ts{font-size:11.5px;color:var(--muted);margin-top:2px}
 .toast .tp{margin-left:auto;font:600 13px 'Playfair Display';white-space:nowrap}
 
+
+/* ===== ПРОИЗВОДИТЕЛЬНОСТЬ ===== */
+#lots,#how,#reviews,#faq,#security,#early{content-visibility:auto;contain-intrinsic-size:1px 700px}
+.moon-wrap,.moon,.cursor-glow,.progress{backface-visibility:hidden}
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+  .moon-wrap{transform:none!important}
+  .cursor-glow{display:none}
+}
+@media (max-width:900px){
+  .cursor-glow{display:none}
+  .grain{display:none}
+  .moon{box-shadow:inset -20px -16px 40px rgba(0,0,0,.22),0 18px 40px rgba(18,16,14,.12)}
+}
 </style>
 </head>
 <body>
@@ -700,7 +715,8 @@ footer{border-top:1px solid var(--line);padding:66px 0 34px;position:relative;z-
 (function(){
   const s=document.getElementById('stars');
   let h='';
-  for(let i=0;i<38;i++){
+  const N=(matchMedia('(hover:hover) and (pointer:fine)').matches&&innerWidth>900)?34:14;
+  for(let i=0;i<N;i++){
     const a=Math.random()*Math.PI*2, r=42+Math.random()*14;
     const x=50+Math.cos(a)*r, y=50+Math.sin(a)*r;
     h+=`<div class="star" style="left:${x}%;top:${y}%;animation-delay:${(Math.random()*4).toFixed(2)}s"></div>`;
@@ -708,10 +724,22 @@ footer{border-top:1px solid var(--line);padding:66px 0 34px;position:relative;z-
   s.innerHTML=h;
 })();
 
-/* ===== падающие звёзды ===== */
-(function(){
+/* ============================================================
+   ЕДИНЫЙ АНИМАЦИОННЫЙ ДВИЖОК
+   Раньше здесь крутились три бесконечных requestAnimationFrame —
+   они считали кадры даже когда луна уже уехала за экран и когда
+   вкладка была свёрнута. Плюс свечение курсора двигалось через
+   left/top, а это пересчёт вёрстки на каждом кадре.
+   Теперь один цикл: он просыпается от движения и засыпает сам.
+   ============================================================ */
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const FINE = matchMedia('(hover:hover) and (pointer:fine)').matches && innerWidth > 900;
+
+/* падающие звёзды — только на десктопе и только пока вкладка открыта */
+if (FINE && !RM) (function(){
   const stage=document.querySelector('.moon-stage');
   function shoot(){
+    if(document.hidden){ setTimeout(shoot,4000); return; }
     const el=document.createElement('div');
     el.className='shooting';
     el.style.left=(5+Math.random()*35)+'%';
@@ -719,47 +747,72 @@ footer{border-top:1px solid var(--line);padding:66px 0 34px;position:relative;z-
     stage.appendChild(el);
     requestAnimationFrame(()=>el.classList.add('go'));
     setTimeout(()=>el.remove(),1700);
-    setTimeout(shoot,4500+Math.random()*6000);
+    setTimeout(shoot,5000+Math.random()*7000);
   }
-  setTimeout(shoot,2200);
+  setTimeout(shoot,2600);
 })();
 
-/* ===== живая луна: мышь + скролл ===== */
 (function(){
   const wrap=document.getElementById('moonWrap');
-  let tX=0,tY=0,cX=0,cY=0;
-  window.addEventListener('mousemove',e=>{
-    tX=(e.clientX/window.innerWidth-.5)*54;
-    tY=(e.clientY/window.innerHeight-.5)*34;
+  const glow=document.getElementById('cursorGlow');
+  const bar=document.getElementById('progress');
+  const hdr=document.getElementById('hdr');
+  const doc=document.documentElement;
+
+  let mx=0,my=0,cx=0,cy=0;                 // параллакс луны
+  let gx=innerWidth/2,gy=innerHeight/2,gcx=gx,gcy=gy;   // свечение
+  let sy=scrollY, heroOn=true, running=false, lastFade=-1;
+
+  addEventListener('mousemove',e=>{
+    if(FINE){ gx=e.clientX; gy=e.clientY; }
+    mx=(e.clientX/innerWidth-.5)*52;
+    my=(e.clientY/innerHeight-.5)*30;
+    kick();
   },{passive:true});
-  function loop(){
-    cX+=(tX-cX)*.05; cY+=(tY-cY)*.05;
-    const sc=window.scrollY;
-    const drift=sc*.82, rot=sc*.03;
-    const scale=Math.max(.42,1-sc*.00062);
-    const fade=sc<560?1:Math.max(0,1-(sc-560)*.0035);
-    wrap.style.transform=`translate(${cX}px,${cY+drift}px) rotate(${rot}deg) scale(${scale})`;
-    wrap.style.opacity=fade;
-    requestAnimationFrame(loop);
+  addEventListener('scroll',()=>{ sy=scrollY; kick(); },{passive:true});
+  addEventListener('resize',kick,{passive:true});
+  document.addEventListener('visibilitychange',()=>{ if(!document.hidden) kick(); });
+
+  const hero=document.querySelector('.hero');
+  if(hero) new IntersectionObserver(es=>{ heroOn=es[0].isIntersecting; kick(); },{threshold:0}).observe(hero);
+
+  function kick(){ if(!running){ running=true; requestAnimationFrame(frame); } }
+
+  function frame(now){
+    let alive=false;
+
+    /* прогресс-чтения: scaleX не трогает вёрстку, в отличие от width */
+    const max=doc.scrollHeight-doc.clientHeight;
+    bar.style.transform='scaleX('+(max>0?(sy/max):0)+')';
+    hdr.classList.toggle('scrolled', sy>20);
+
+    /* свечение под курсором — transform, а не left/top */
+    if(FINE){
+      gcx+=(gx-gcx)*.14; gcy+=(gy-gcy)*.14;
+      glow.style.transform='translate3d('+(gcx-170).toFixed(1)+'px,'+(gcy-170).toFixed(1)+'px,0)';
+      if(Math.abs(gx-gcx)>.4||Math.abs(gy-gcy)>.4) alive=true;
+    }
+
+    /* луна: плывёт, дышит и слегка покачивается */
+    if(wrap && heroOn && !RM){
+      const fade = sy<560 ? 1 : Math.max(0,1-(sy-560)*.0035);
+      if(fade>0){
+        cx+=(mx-cx)*.055; cy+=(my-cy)*.055;
+        const breath = Math.sin(now/2900)*10 + Math.sin(now/4700)*4.5;   // два ритма = живое, не механическое
+        const sway   = Math.sin(now/6100)*.7;
+        const drift  = sy*.82;
+        const sc     = Math.max(.42, 1 - sy*.00062);
+        wrap.style.transform='translate3d('+cx.toFixed(2)+'px,'+(cy+drift+breath).toFixed(2)+'px,0) rotate('+(sy*.03+sway).toFixed(2)+'deg) scale('+sc.toFixed(3)+')';
+        if(fade!==lastFade){ wrap.style.opacity=fade.toFixed(2); lastFade=fade; }
+        alive=true;
+      }else if(lastFade!==0){ wrap.style.opacity='0'; lastFade=0; }
+    }
+
+    if(alive && !document.hidden) requestAnimationFrame(frame);
+    else running=false;
   }
-  loop();
+  kick();
 })();
-
-/* ===== курсор-свет ===== */
-(function(){
-  const g=document.getElementById('cursorGlow');
-  let x=0,y=0,cx=0,cy=0;
-  window.addEventListener('mousemove',e=>{x=e.clientX;y=e.clientY},{passive:true});
-  (function f(){cx+=(x-cx)*.12;cy+=(y-cy)*.12;g.style.left=cx+'px';g.style.top=cy+'px';requestAnimationFrame(f)})();
-})();
-
-/* ===== прогресс + шапка ===== */
-window.addEventListener('scroll',()=>{
-  const h=document.documentElement;
-  const p=h.scrollTop/(h.scrollHeight-h.clientHeight)*100;
-  document.getElementById('progress').style.width=p+'%';
-  document.getElementById('hdr').classList.toggle('scrolled',h.scrollTop>20);
-},{passive:true});
 
 /* ===== бегущая строка ===== */
 (function(){

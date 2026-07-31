@@ -13,6 +13,7 @@ const SUPABASE_URL='https://axtptzceicyhnmnopaaa.supabase.co';
 const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4dHB0emNlaWN5aG5tbm9wYWFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ5NzY0NDAsImV4cCI6MjEwMDU1MjQ0MH0.9YRi27aam540EOqjz_kzwf9bjseMOOCdpydS3-O5b58';
 try{window.sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);}catch(e){window.sb=null;}
 </script>
+<link rel="stylesheet" href="./moon.css">
 <style>
 :root{--ink:#12100e;--muted:#6f6a63;--line:#e9e5dd;--paper:#fdfcfa;--paper2:#f7f4ef;--red:#b83227;--green:#1a7f4b;--ease:cubic-bezier(.22,.9,.28,1)}
 *{margin:0;padding:0;box-sizing:border-box}
@@ -32,7 +33,7 @@ header{border-bottom:1px solid var(--line);background:rgba(253,252,250,.8);backd
 .back:hover{color:var(--ink)}
 
 .main{flex:1;display:flex;align-items:center;justify-content:center;padding:50px 20px;position:relative;overflow:hidden}
-.moon-bg{position:absolute;width:520px;height:520px;border-radius:50%;background:url('moon.png') center/cover;opacity:.07;right:-140px;top:-120px;animation:spin 200s linear infinite;pointer-events:none}
+.moon-bg{position:absolute;width:520px;height:520px;border-radius:50%;background:var(--moon-img) center/cover;opacity:.07;right:-140px;top:-120px;animation:spin 200s linear infinite;pointer-events:none}
 @keyframes spin{to{transform:rotate(360deg)}}
 .card{width:100%;max-width:430px;background:#fff;border:1px solid var(--line);border-radius:32px;padding:clamp(28px,5vw,44px);box-shadow:0 34px 80px rgba(18,16,14,.08);position:relative;z-index:2}
 .card::before{content:'門';position:absolute;right:-14px;bottom:-52px;font-family:'Noto Serif JP';font-size:170px;color:rgba(18,16,14,.03);line-height:1;pointer-events:none}
