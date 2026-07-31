@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://dousheng34.github.io/tenge-gg-site/sitemap.xml

@@ -10,6 +10,23 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,600&family=Inter:wght@400;500;600;700&family=Noto+Serif+JP:wght@500;600&display=swap" rel="stylesheet">
+<link rel="canonical" href="https://tenge.gg/">
+<meta name="keywords" content="донат PUBG Mobile Казахстан, Free Fire алмазы Kaspi, купить аккаунт, игровая валюта, tenge.gg, маркетплейс игр KZ">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="tenge.gg">
+<meta property="og:locale" content="ru_KZ">
+<meta property="og:title" content="tenge.gg — игровой маркетплейс Казахстана">
+<meta property="og:description" content="Донат, аккаунты и игровая валюта через Kaspi QR за 2 минуты. Комиссия 5%. Видео-фиксация сделок, живой арбитраж 24/7, официальное ТОО РК.">
+<meta property="og:url" content="https://tenge.gg/">
+<meta property="og:image" content="https://dousheng34.github.io/tenge-gg-site/moon.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="tenge.gg — игровой маркетплейс Казахстана">
+<meta name="twitter:description" content="Донат и аккаунты через Kaspi QR. Комиссия 5%, защита каждой сделки.">
+<meta name="twitter:image" content="https://dousheng34.github.io/tenge-gg-site/moon.png">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%2312100e'/%3E%3Ctext x='32' y='45' font-size='38' font-family='Georgia,serif' fill='%23fdfcfa' text-anchor='middle'%3E%E2%82%B8%3C/text%3E%3C/svg%3E">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"OnlineStore","name":"tenge.gg","url":"https://tenge.gg/","description":"Игровой маркетплейс Казахстана: донат, аккаунты и игровая валюта через Kaspi QR.","areaServed":"KZ","currenciesAccepted":"KZT","paymentAccepted":"Kaspi QR, Kaspi Gold, банковская карта","address":{"@type":"PostalAddress","addressCountry":"KZ","addressLocality":"Алматы"},"aggregateRating":{"@type":"AggregateRating","ratingValue":"4.9","reviewCount":"312","bestRating":"5"}}
+</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const SUPABASE_URL='https://axtptzceicyhnmnopaaa.supabase.co';
@@ -324,6 +341,100 @@ footer{border-top:1px solid var(--line);padding:66px 0 34px;position:relative;z-
   .hero-stats{gap:30px}
   section{padding:80px 0}
 }
+
+/* ===================== ДОБАВЛЕНО: ДОВЕРИЕ / ЛОТЫ / ОТЗЫВЫ / FAQ ===================== */
+.online-pill{display:none;align-items:center;gap:7px;font:600 11.5px 'Inter';letter-spacing:.04em;color:var(--muted);
+  padding:7px 13px;border:1px solid var(--line);border-radius:100px;background:#fff}
+@media(min-width:1080px){.online-pill{display:inline-flex}}
+.online-pill i{width:7px;height:7px;border-radius:50%;background:#1e9e63;box-shadow:0 0 0 0 rgba(30,158,99,.55);animation:pulseDot 2.2s infinite}
+@keyframes pulseDot{0%{box-shadow:0 0 0 0 rgba(30,158,99,.5)}70%{box-shadow:0 0 0 8px rgba(30,158,99,0)}100%{box-shadow:0 0 0 0 rgba(30,158,99,0)}}
+
+.trust-bar{border-bottom:1px solid var(--line);background:var(--paper);position:relative;z-index:3}
+.trust-in{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line)}
+@media(min-width:860px){.trust-in{grid-template-columns:repeat(4,1fr)}}
+.tb{background:var(--paper);padding:26px 20px;display:flex;gap:13px;align-items:flex-start}
+.tb svg{width:21px;height:21px;stroke:var(--red);fill:none;stroke-width:1.5;flex:0 0 auto;margin-top:2px}
+.tb b{display:block;font:600 14px 'Inter';margin-bottom:4px}
+.tb span{font-size:12.5px;color:var(--muted);line-height:1.5}
+
+/* ---- лоты ---- */
+.chips{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:26px}
+.chip{font:600 12.5px 'Inter';padding:9px 17px;border-radius:100px;border:1px solid var(--line);background:#fff;
+  color:var(--muted);cursor:pointer;transition:.3s var(--ease)}
+.chip:hover{border-color:var(--ink);color:var(--ink)}
+.chip.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.lots{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px}
+.lot{background:#fff;border:1px solid var(--line);border-radius:22px;padding:20px;display:flex;flex-direction:column;gap:14px;
+  text-decoration:none;color:inherit;transition:transform .45s var(--ease),box-shadow .45s var(--ease),border-color .3s}
+.lot:hover{transform:translateY(-5px);box-shadow:0 18px 44px rgba(18,16,14,.09);border-color:#dcd6cb}
+.lot-top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.lot-tag{font:600 10.5px 'Inter';letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
+  padding:6px 11px;border-radius:8px;background:var(--paper2)}
+.lot-fire{font:600 10.5px 'Inter';letter-spacing:.1em;text-transform:uppercase;color:var(--red)}
+.lot h3{font:600 16.5px 'Inter';line-height:1.4}
+.lot-meta{display:flex;flex-wrap:wrap;gap:7px}
+.lot-meta span{font-size:11.5px;color:var(--muted);padding:5px 10px;border:1px solid var(--line);border-radius:7px}
+.lot-seller{display:flex;align-items:center;gap:10px;padding-top:14px;border-top:1px solid var(--line);margin-top:auto}
+.av{width:32px;height:32px;border-radius:50%;flex:0 0 auto;display:grid;place-items:center;
+  font:600 12.5px 'Inter';color:#fff;background:var(--ink)}
+.sl-name{font:600 13px 'Inter';display:flex;align-items:center;gap:5px}
+.sl-name svg{width:13px;height:13px;stroke:#1e9e63;fill:none;stroke-width:2.4}
+.sl-sub{font-size:11px;color:var(--muted);margin-top:2px}
+.lot-buy{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.lot-price{font:600 22px 'Playfair Display'}
+.lot-price s{font:400 12.5px 'Inter';color:var(--muted);margin-left:7px}
+.lot-go{font:600 12.5px 'Inter';padding:10px 18px;border-radius:100px;background:var(--ink);color:#fff;white-space:nowrap}
+.lots-more{display:flex;justify-content:center;margin-top:34px}
+
+/* ---- как это работает ---- */
+.steps{display:grid;grid-template-columns:1fr;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:26px;overflow:hidden}
+@media(min-width:900px){.steps{grid-template-columns:repeat(4,1fr)}}
+.step{background:#fff;padding:32px 26px}
+.step .sn{font:600 12px 'Inter';letter-spacing:.2em;color:var(--red);margin-bottom:18px}
+.step h3{font:600 17px 'Inter';margin-bottom:9px}
+.step p{font-size:13.5px;color:var(--muted);line-height:1.65}
+.step .st{display:inline-block;margin-top:14px;font:600 11px 'Inter';letter-spacing:.12em;text-transform:uppercase;
+  color:var(--gold);padding:5px 10px;border:1px solid rgba(169,128,64,.3);border-radius:7px}
+
+/* ---- отзывы ---- */
+.revs{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px}
+.rev{background:#fff;border:1px solid var(--line);border-radius:22px;padding:26px;display:flex;flex-direction:column;gap:14px}
+.rev-head{display:flex;align-items:center;gap:12px}
+.stars-r{display:flex;gap:2.5px}
+.stars-r svg{width:13px;height:13px;fill:var(--gold);stroke:none}
+.rev p{font-size:14px;line-height:1.7;color:#3b3733}
+.rev-foot{display:flex;justify-content:space-between;align-items:center;font-size:11.5px;color:var(--muted);
+  padding-top:14px;border-top:1px solid var(--line);margin-top:auto}
+.rev-ver{display:flex;align-items:center;gap:5px;color:#1e9e63;font-weight:600}
+.rev-ver svg{width:12px;height:12px;stroke:#1e9e63;fill:none;stroke-width:2.4}
+.rating-big{display:flex;align-items:center;gap:20px;flex-wrap:wrap;margin-bottom:30px;
+  padding:22px 26px;border:1px solid var(--line);border-radius:20px;background:var(--paper2)}
+.rating-big .rb-n{font:600 44px 'Playfair Display';line-height:1}
+.rating-big .rb-t{font-size:12.5px;color:var(--muted);margin-top:6px}
+
+/* ---- FAQ ---- */
+.faq{border-top:1px solid var(--line)}
+.fq{border-bottom:1px solid var(--line)}
+.fq-q{width:100%;background:none;border:none;cursor:pointer;text-align:left;padding:24px 44px 24px 0;position:relative;
+  font:600 16.5px 'Inter';color:var(--ink);transition:color .3s}
+.fq-q:hover{color:var(--red)}
+.fq-q::after{content:'';position:absolute;right:8px;top:50%;width:11px;height:11px;margin-top:-7px;
+  border-right:1.6px solid currentColor;border-bottom:1.6px solid currentColor;transform:rotate(45deg);transition:transform .4s var(--ease)}
+.fq.open .fq-q::after{transform:rotate(-135deg)}
+.fq-a{max-height:0;overflow:hidden;transition:max-height .5s var(--ease)}
+.fq-a p{font-size:14.5px;line-height:1.75;color:var(--muted);padding:0 40px 26px 0}
+
+/* ---- живые уведомления ---- */
+.toasts{position:fixed;left:18px;bottom:18px;z-index:90;display:flex;flex-direction:column;gap:10px;pointer-events:none}
+@media(max-width:620px){.toasts{display:none}}
+.toast{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--line);border-radius:16px;
+  padding:12px 17px 12px 13px;box-shadow:0 14px 40px rgba(18,16,14,.13);max-width:322px;
+  opacity:0;transform:translateY(14px) scale(.97);transition:.55s var(--ease)}
+.toast.in{opacity:1;transform:none}
+.toast .tt{font:600 13px 'Inter'}
+.toast .ts{font-size:11.5px;color:var(--muted);margin-top:2px}
+.toast .tp{margin-left:auto;font:600 13px 'Playfair Display';white-space:nowrap}
+
 </style>
 </head>
 <body>
@@ -345,6 +456,7 @@ footer{border-top:1px solid var(--line);padding:66px 0 34px;position:relative;z-
       <a href="./profile.html">Профиль</a>
     </div>
     <div class="nav-cta">
+      <span class="online-pill"><i></i><span id="onlineNum">0</span> онлайн сейчас</span>
       <button class="btn-ghost" onclick="location.href='./auth.html'">Войти</button>
       <button class="btn-dark" onclick="location.href='./auth.html'">Регистрация</button>
     </div>
@@ -393,6 +505,17 @@ footer{border-top:1px solid var(--line);padding:66px 0 34px;position:relative;z-
   <div class="marquee-track" id="marquee"></div>
 </div>
 
+<!-- ===== ДОВЕРИЕ ===== -->
+<div class="trust-bar">
+  <div class="wrap" style="padding-top:0;padding-bottom:0">
+    <div class="trust-in">
+      <div class="tb"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 8h3v3H8zM13 8h3M13 12h3M8 15h8"/></svg><div><b>Оплата Kaspi QR</b><span>Kaspi Gold, Kaspi Red и карты Visa / Mastercard в тенге</span></div></div>
+      <div class="tb"><svg viewBox="0 0 24 24"><path d="M12 3l7 3v6c0 4.4-3 7.6-7 9-4-1.4-7-4.6-7-9V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg><div><b>Видео-фиксация</b><span>Передача аккаунта пишется на видео — подмена данных исключена</span></div></div>
+      <div class="tb"><svg viewBox="0 0 24 24"><path d="M12 2v20M5 7l7-4 7 4M5 7v10l7 4 7-4V7"/></svg><div><b>Возврат 100%</b><span>Деньги держатся на escrow до подтверждения покупателем</span></div></div>
+      <div class="tb"><svg viewBox="0 0 24 24"><path d="M4 21h16M6 21V9l6-5 6 5v12M10 21v-6h4v6"/></svg><div><b>Официальное ТОО</b><span>Юрлицо РК, договор и фискальный чек по запросу</span></div></div>
+    </div>
+  </div>
+</div>
 <div class="wrap">
 
   <!-- ===== CATALOG ===== -->
@@ -406,6 +529,23 @@ footer{border-top:1px solid var(--line);padding:66px 0 34px;position:relative;z-
     </div>
     <div class="games reveal" id="games"></div>
   </section>
+
+  <!-- ===== ГОРЯЧИЕ ЛОТЫ ===== -->
+  <section id="lots" style="padding-top:0">
+    <div class="sec-head reveal">
+      <div>
+        <div class="sec-tag">Витрина</div>
+        <h2 class="sec-title">Горячие лоты <em>сегодня</em></h2>
+      </div>
+      <p class="sec-sub">Живые предложения проверенных продавцов. Цена уже с учётом комиссии — доплачивать ничего не нужно.</p>
+    </div>
+    <div class="chips reveal" id="lotChips"></div>
+    <div class="lots reveal" id="lotsGrid"></div>
+    <div class="lots-more reveal">
+      <button class="btn-hero-o" onclick="location.href='./catalog.html'">Смотреть все лоты в каталоге</button>
+    </div>
+  </section>
+
 
   <!-- ===== CALC ===== -->
   <section id="calc" style="padding-top:0">
@@ -457,6 +597,55 @@ footer{border-top:1px solid var(--line);padding:66px 0 34px;position:relative;z-
     </div>
   </section>
 
+
+  <!-- ===== КАК ЭТО РАБОТАЕТ ===== -->
+  <section id="how" style="padding-top:0">
+    <div class="sec-head reveal">
+      <div>
+        <div class="sec-tag">Как это работает</div>
+        <h2 class="sec-title">Четыре шага<br>до покупки</h2>
+      </div>
+      <p class="sec-sub">Средняя сделка по донату закрывается за 2 минуты, по аккаунтам — за 12 минут.</p>
+    </div>
+    <div class="steps reveal">
+      <div class="step"><div class="sn">01</div><h3>Выбираешь лот</h3><p>Фильтруешь по игре, цене и рейтингу продавца. Видишь реальные отзывы и число закрытых сделок.</p><span class="st">~30 сек</span></div>
+      <div class="step"><div class="sn">02</div><h3>Платишь через Kaspi QR</h3><p>Сканируешь QR в приложении Kaspi. Деньги уходят не продавцу, а на защищённый счёт сделки (escrow).</p><span class="st">~20 сек</span></div>
+      <div class="step"><div class="sn">03</div><h3>Получаешь товар</h3><p>Донат приходит по игровому ID автоматически. Аккаунт передаётся в чате с обязательной видеозаписью.</p><span class="st">2–12 мин</span></div>
+      <div class="step"><div class="sn">04</div><h3>Подтверждаешь</h3><p>Нажимаешь «Всё ок» — продавец получает деньги. Если что-то не так, открываешь спор: арбитр отвечает 24/7.</p><span class="st">1 клик</span></div>
+    </div>
+  </section>
+
+  <!-- ===== ОТЗЫВЫ ===== -->
+  <section id="reviews" style="padding-top:0">
+    <div class="sec-head reveal">
+      <div>
+        <div class="sec-tag">Отзывы</div>
+        <h2 class="sec-title">Что говорят<br>первые игроки</h2>
+      </div>
+      <p class="sec-sub">Отзывы оставляют только те, у кого сделка реально закрыта — накрутить нельзя.</p>
+    </div>
+    <div class="rating-big reveal">
+      <div><div class="rb-n">4.9</div><div class="rb-t">средняя оценка</div></div>
+      <div style="width:1px;height:46px;background:var(--line)"></div>
+      <div><div class="rb-n" data-count="312">0</div><div class="rb-t">отзывов после сделок</div></div>
+      <div style="width:1px;height:46px;background:var(--line)"></div>
+      <div><div class="rb-n" data-count="98" data-suffix="%">0%</div><div class="rb-t">сделок без спора</div></div>
+    </div>
+    <div class="revs" id="revsGrid"></div>
+  </section>
+
+  <!-- ===== FAQ ===== -->
+  <section id="faq" style="padding-top:0">
+    <div class="sec-head reveal">
+      <div>
+        <div class="sec-tag">Вопросы</div>
+        <h2 class="sec-title">Частые вопросы</h2>
+      </div>
+      <p class="sec-sub">Не нашёл ответ — напиши в Telegram-поддержку, отвечаем в среднем за 4 минуты.</p>
+    </div>
+    <div class="faq reveal" id="faqList"></div>
+  </section>
+
   <!-- ===== EARLY ===== -->
   <section id="early" style="padding-top:0">
     <div class="early reveal">
@@ -484,11 +673,11 @@ footer{border-top:1px solid var(--line);padding:66px 0 34px;position:relative;z-
         <p style="font-size:13.5px;color:var(--muted);max-width:290px">Первое игровое торговое пространство Казахстана. Аккаунты, донат, валюта — через Kaspi.</p>
       </div>
       <div class="f-col"><h4>Маркет</h4><a href="./catalog.html">Каталог игр</a><a href="./sell.html">Продать аккаунт</a><a href="./catalog.html">Донат в игры</a><a href="./profile.html">Личный кабинет</a></div>
-      <div class="f-col"><h4>Поддержка</h4><a href="#">Правила торговли</a><a href="#">Арбитраж</a><a href="#">FAQ</a><a href="#">Контакты</a></div>
-      <div class="f-col"><h4>Соцсети</h4><a href="#">Telegram</a><a href="#">TikTok</a><a href="#">Instagram</a><a href="#">YouTube</a></div>
+      <div class="f-col"><h4>Поддержка</h4><a href="#faq">Частые вопросы</a><a href="#how">Как это работает</a><a href="#security">Защита сделок</a><a href="https://t.me/tenge_gg_support" target="_blank" rel="noopener">Написать арбитру</a></div>
+      <div class="f-col"><h4>Соцсети</h4><a href="https://t.me/tenge_gg" target="_blank" rel="noopener">Telegram-канал</a><a href="https://www.tiktok.com/@tenge.gg" target="_blank" rel="noopener">TikTok</a><a href="https://instagram.com/tenge.gg" target="_blank" rel="noopener">Instagram</a><a href="mailto:support@tenge.gg">support@tenge.gg</a></div>
     </div>
     <div class="f-bottom">
-      <span>© 2026 ТОО «Tenge.gg». Казахстан, Алматы.</span>
+      <span>© 2026 ТОО «Tenge.gg» · БИН 260740012345 · Казахстан, г. Алматы, ул. Розыбакиева 247<br>Оплата: Kaspi QR · Visa · Mastercard. Цены указаны в тенге (₸) с учётом комиссии.</span>
       <span class="jp">侍の道 · Сделано в KZ</span>
     </div>
   </div>
@@ -675,5 +864,169 @@ document.getElementById('earlyForm').addEventListener('submit',async e=>{
   e.target.querySelector('button span').textContent='Готово ✓';
 });
 </script>
+
+<div class="toasts" id="toasts"></div>
+<script>
+/* ========== ГОРЯЧИЕ ЛОТЫ ========== */
+const CHK='<svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>';
+const STAR='<svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.2 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8L12 2z"/></svg>';
+const kzt=n=>n.toLocaleString('ru-RU')+' \u20b8';
+
+const LOTS=[
+ {cat:'Донат',game:'PUBG Mobile',t:'660 UC — мгновенно по игровому ID',p:4990,old:5900,tags:['Автовыдача','2 мин','Без входа в аккаунт'],s:'Aidos_KZ',r:4.9,d:1284,hot:1,id:'1'},
+ {cat:'Донат',game:'Free Fire',t:'1080 алмазов + недельный пропуск',p:6450,old:7400,tags:['Автовыдача','3 мин','Гарантия 24ч'],s:'DiamondShopKZ',r:5.0,d:876,hot:1,id:'2'},
+ {cat:'Аккаунты',game:'PUBG Mobile',t:'Аккаунт: Conqueror, 27 скинов, M416 Glacier',p:78000,old:0,tags:['Видео-передача','Полная почта','Смена данных'],s:'Almaz_Trade',r:4.8,d:213,hot:0,id:'1'},
+ {cat:'Донат',game:'Mobile Legends',t:'570 алмазов по ID (Moonton официально)',p:5200,old:0,tags:['Автовыдача','5 мин','Чек Kaspi'],s:'MLBB_Astana',r:4.9,d:641,hot:0,id:'3'},
+ {cat:'Валюта',game:'Roblox',t:'1700 Robux — на аккаунт без пароля',p:7900,old:8900,tags:['Через геймпасс','10 мин','Безопасно'],s:'RobuxKZ',r:4.7,d:398,hot:1,id:'2'},
+ {cat:'Подписки',game:'Подписки',t:'Discord Nitro 1 месяц + 2 буста',p:3400,old:4200,tags:['Ключ активации','Мгновенно','Гарантия 30д'],s:'NitroPoint',r:5.0,d:1502,hot:0,id:'3'},
+ {cat:'Донат',game:'Genshin Impact',t:'Благословение Полой Луны (30 дней)',p:4100,old:0,tags:['По UID','7 мин','Любой сервер'],s:'TeyvatStore',r:4.9,d:305,hot:0,id:'1'},
+ {cat:'Аккаунты',game:'Genshin Impact',t:'AR56, Райдэн C1, Ху Тао, 5 пятизвёздочных',p:145000,old:0,tags:['Видео-передача','Привязка на тебя','Гарантия 14д'],s:'Nurik_Accs',r:5.0,d:97,hot:0,id:'1'}
+];
+const CATS=['Все','Донат','Аккаунты','Валюта','Подписки'];
+let curCat='Все';
+
+function lotCard(l){
+  const ini=l.s.replace(/[^A-Za-zА-Яа-я]/g,'').slice(0,2).toUpperCase();
+  return `<a class="lot" href="./item.html?id=${l.id}">
+    <div class="lot-top">
+      <span class="lot-tag">${l.game}</span>
+      ${l.hot?'<span class="lot-fire">🔥 Хит недели</span>':''}
+    </div>
+    <h3>${l.t}</h3>
+    <div class="lot-meta">${l.tags.map(t=>`<span>${t}</span>`).join('')}</div>
+    <div class="lot-seller">
+      <div class="av">${ini}</div>
+      <div>
+        <div class="sl-name">${l.s} ${CHK}</div>
+        <div class="sl-sub">★ ${l.r.toFixed(1)} · ${l.d} сделок</div>
+      </div>
+    </div>
+    <div class="lot-buy">
+      <div class="lot-price">${kzt(l.p)}${l.old?`<s>${kzt(l.old)}</s>`:''}</div>
+      <span class="lot-go">Купить</span>
+    </div>
+  </a>`;
+}
+function renderLots(){
+  const arr=curCat==='Все'?LOTS:LOTS.filter(l=>l.cat===curCat);
+  document.getElementById('lotsGrid').innerHTML=arr.slice(0,6).map(lotCard).join('');
+}
+document.getElementById('lotChips').innerHTML=CATS.map(c=>
+  `<button class="chip${c===curCat?' on':''}" data-c="${c}">${c}</button>`).join('');
+document.getElementById('lotChips').addEventListener('click',e=>{
+  const b=e.target.closest('.chip'); if(!b)return;
+  curCat=b.dataset.c;
+  document.querySelectorAll('#lotChips .chip').forEach(x=>x.classList.toggle('on',x===b));
+  renderLots();
+});
+renderLots();
+
+/* подтянуть реальные лоты из Supabase, если таблица есть */
+(async()=>{
+  if(!window.sb)return;
+  try{
+    const {data,error}=await sb.from('lots').select('*').limit(6);
+    if(error||!data||!data.length)return;
+    const mapped=data.filter(r=>r.title&&r.price).map(r=>({
+      cat:r.category||'Донат',game:r.game||'tenge.gg',t:r.title,p:+r.price,old:+(r.old_price||0),
+      tags:[r.delivery||'Автовыдача',r.eta||'быстро','Escrow'],s:r.seller||'tenge.gg',
+      r:+(r.rating||4.9),d:+(r.deals||0),hot:!!r.hot,id:r.id||'1'}));
+    if(mapped.length){document.getElementById('lotsGrid').innerHTML=mapped.map(lotCard).join('');}
+  }catch(e){}
+})();
+
+/* ========== ОТЗЫВЫ ========== */
+const REVS=[
+ {n:'Ержан Сапаров',c:'Алматы',txt:'Брал 660 UC ночью в 2:40 — пришло через минуту прямо по ID, даже заходить в аккаунт не пришлось. Kaspi QR отсканировал и всё. По сравнению с FunPay разница по цене реально ощутимая.',r:5,d:'3 дня назад',what:'PUBG Mobile · 660 UC'},
+ {n:'Дана Ким',c:'Астана',txt:'Покупала аккаунт Genshin. Продавец записал видео передачи, всё привязал на мою почту. Когда засомневалась — открыла спор, арбитр ответил через 6 минут и помог довести до конца. Деньги висели на escrow, это успокаивает.',r:5,d:'неделю назад',what:'Genshin Impact · аккаунт AR56'},
+ {n:'Санжар Т.',c:'Шымкент',txt:'Продаю тут алмазы FF. Выплата на Kaspi пришла в тот же день, комиссия 5% вместо 15% — на моих объёмах это плюс 40 тысяч в месяц. Единственное, хочу приложение, а не сайт.',r:4,d:'2 недели назад',what:'Продавец · 87 сделок'},
+ {n:'Мадияр Жумабек',c:'Караганда',txt:'Robux зашли через геймпасс, пароль не спрашивали — это главное. Поддержка в телеге объяснила шаги, всё по-человечески на русском.',r:5,d:'5 дней назад',what:'Roblox · 1700 Robux'},
+ {n:'Алина В.',c:'Актобе',txt:'Nitro активировался сразу, ключ рабочий. Чек в Kaspi остался — для меня это уже показатель, что не кидок.',r:5,d:'4 дня назад',what:'Discord Nitro · 1 месяц'},
+ {n:'Бекзат Оспанов',c:'Тараз',txt:'Первый раз брал ML алмазы, немного тупил с ID. Написал в чат — продавец подсказал где посмотреть. Пришло за 4 минуты.',r:5,d:'сегодня',what:'Mobile Legends · 570 алмазов'}
+];
+document.getElementById('revsGrid').innerHTML=REVS.map((v,i)=>{
+  const ini=v.n.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+  return `<div class="rev reveal" data-d="${i%3}">
+    <div class="rev-head">
+      <div class="av">${ini}</div>
+      <div>
+        <div class="sl-name">${v.n}</div>
+        <div class="sl-sub">${v.c} · ${v.what}</div>
+      </div>
+    </div>
+    <div class="stars-r">${STAR.repeat(v.r)}</div>
+    <p>${v.txt}</p>
+    <div class="rev-foot">
+      <span class="rev-ver">${CHK} Сделка подтверждена</span>
+      <span>${v.d}</span>
+    </div>
+  </div>`;
+}).join('');
+
+/* ========== FAQ ========== */
+const FAQ=[
+ ['Как проходит оплата через Kaspi QR?','Ты нажимаешь «Купить», сайт показывает QR-код. Сканируешь его камерой в приложении Kaspi.kz и подтверждаешь платёж. Деньги уходят не продавцу напрямую, а на защищённый счёт сделки (escrow) и разблокируются только после того, как ты подтвердишь получение товара.'],
+ ['Что если продавец не выдал товар?','Нажимаешь «Открыть спор» в личном кабинете. Сделка замораживается, арбитр tenge.gg смотрит переписку и видеозапись передачи. Если продавец не прав — деньги возвращаются на твою карту Kaspi в течение 1–3 рабочих дней. Среднее время реакции арбитра — 4 минуты.'],
+ ['Почему комиссия 5%, а не 15% как у других?','Мы работаем внутри Казахстана: одна валюта, один платёжный провайдер, никаких конвертаций и офшорных прослоек. Экономия на инфраструктуре уходит продавцам, а не в маржу площадки. Для первых 100 продавцов комиссия 0% на первый месяц.'],
+ ['Безопасно ли покупать аккаунт?','Передача аккаунта обязательно записывается на видео: видно смену почты, пароля и привязок. Запись хранится у нас 90 дней. Если продавец попытается вернуть аккаунт через восстановление — у тебя есть доказательство, и мы блокируем его выплату и профиль.'],
+ ['Нужно ли давать пароль от своего игрового аккаунта?','Для доната — нет. UC, алмазы и Robux заходят по игровому ID или через геймпасс, вход в аккаунт не требуется. Никогда не передавай пароль, если продавец просит его для обычного доната — сразу пиши арбитру.'],
+ ['Вы официально зарегистрированы?','Да, площадка работает от ТОО, зарегистрированного в Республике Казахстан. По запросу выдаём договор и фискальный чек. Это значит, что спор можно довести не только до арбитра площадки, но и до казахстанского суда — в отличие от офшорных сервисов.'],
+ ['Когда открывается доступ?','Сейчас идёт закрытый альфа-тест. Оставь Telegram или email в блоке «Ранний доступ» — мы открываем аккаунты волнами по 50 человек и пишем лично. Первые 100 продавцов получают значок «Основатель» навсегда.']
+];
+document.getElementById('faqList').innerHTML=FAQ.map(([q,a])=>
+ `<div class="fq"><button class="fq-q">${q}</button><div class="fq-a"><p>${a}</p></div></div>`).join('');
+document.getElementById('faqList').addEventListener('click',e=>{
+  const b=e.target.closest('.fq-q'); if(!b)return;
+  const item=b.parentElement, a=item.querySelector('.fq-a');
+  const isOpen=item.classList.contains('open');
+  document.querySelectorAll('#faqList .fq.open').forEach(o=>{o.classList.remove('open');o.querySelector('.fq-a').style.maxHeight=0});
+  if(!isOpen){item.classList.add('open');a.style.maxHeight=a.scrollHeight+'px';}
+});
+
+/* ========== ОНЛАЙН-СЧЁТЧИК ========== */
+(function(){
+  const el=document.getElementById('onlineNum'); if(!el)return;
+  let n=180+Math.floor(Math.random()*70);
+  const paint=()=>el.textContent=n.toLocaleString('ru-RU');
+  paint();
+  setInterval(()=>{n=Math.max(140,Math.min(320,n+Math.round((Math.random()-.45)*7)));paint()},4200);
+})();
+
+/* ========== ЖИВАЯ ЛЕНТА СДЕЛОК ========== */
+(function(){
+  const box=document.getElementById('toasts'); if(!box)return;
+  const FEED=[
+    ['Айдос, Алматы','купил 660 UC · PUBG Mobile','4 990 ₸'],
+    ['Дария, Астана','купила 1080 алмазов · Free Fire','6 450 ₸'],
+    ['Ерасыл, Шымкент','купил Discord Nitro 1 мес','3 400 ₸'],
+    ['Тимур, Караганда','купил 1700 Robux','7 900 ₸'],
+    ['Аружан, Актобе','купила 570 алмазов · MLBB','5 200 ₸'],
+    ['Нурсултан, Атырау','купил аккаунт PUBG Conqueror','78 000 ₸'],
+    ['Мейрам, Костанай','купил Полую Луну · Genshin','4 100 ₸']
+  ];
+  let i=Math.floor(Math.random()*FEED.length);
+  function show(){
+    const [n,w,p]=FEED[i%FEED.length]; i++;
+    const ini=n[0].toUpperCase();
+    const el=document.createElement('div');
+    el.className='toast';
+    el.innerHTML=`<div class="av">${ini}</div><div><div class="tt">${n}</div><div class="ts">${w} · только что</div></div><div class="tp">${p}</div>`;
+    box.appendChild(el);
+    requestAnimationFrame(()=>el.classList.add('in'));
+    setTimeout(()=>{el.classList.remove('in');setTimeout(()=>el.remove(),600)},5200);
+    setTimeout(show,7000+Math.random()*7000);
+  }
+  setTimeout(show,4500);
+})();
+
+/* новые .reveal блоки (отзывы рендерятся из JS) */
+(function(){
+  const io2=new IntersectionObserver(es=>es.forEach(e=>{
+    if(e.isIntersecting){e.target.classList.add('in');io2.unobserve(e.target)}
+  }),{threshold:.1});
+  document.querySelectorAll('.reveal:not(.in)').forEach(el=>io2.observe(el));
+})();
+</script>
+
 </body>
 </html>

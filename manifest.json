@@ -3,14 +3,21 @@
   "short_name": "tenge.gg",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#060709",
-  "theme_color": "#060709",
+  "background_color": "#fdfcfa",
+  "theme_color": "#fdfcfa",
   "description": "Первое игровое торговое пространство Казахстана. Аккаунты, донат, валюта через Kaspi QR.",
   "icons": [
     {
       "src": "./moon.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
+  ],
+  "lang": "ru",
+  "scope": "./",
+  "categories": [
+    "shopping",
+    "games"
   ]
 }
