@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>tenge.gg — Игровой маркетплейс Казахстана</title>
 <link rel="stylesheet" href="./moon.css">
+<link rel="stylesheet" href="./art.css" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="./art.css"></noscript>
 <link rel="manifest" href="./manifest.json">
 <meta name="theme-color" content="#fdfcfa">
 <meta name="description" content="Донат, аккаунты и игровая валюта через Kaspi QR. Комиссия 5%. Защита ТОО.">
@@ -837,12 +839,8 @@ if (FINE && !RM) (function(){
 
 /* ===== игры ===== */
 const ICONS={
- rifle:'<svg viewBox="0 0 24 24"><path d="M2 12h14l4-3v6l-4-3M2 12v3h6v-3M8 12V9h8v3M16 9l2-2"/></svg>',
- gem:'<svg viewBox="0 0 24 24"><path d="M6 3h12l4 6-10 12L2 9l4-6zM2 9h20M12 21L8 9l4-6 4 6-4 12"/></svg>',
- sword:'<svg viewBox="0 0 24 24"><path d="M4 20L14 10M14 10l6-6-2-2-6 6M14 10l-2-2M6 18l2 2M4 20l2-2"/></svg>',
- star:'<svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.2 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8L12 2z"/></svg>',
- cube:'<svg viewBox="0 0 24 24"><path d="M12 2l9 5v10l-9 5-9-5V7l9-5zM12 2v10m0 0l9-5m-9 5L3 7m9 15V12"/></svg>',
- gift:'<svg viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="4"/><path d="M5 12v9h14v-9M12 8v13M12 8s-4 0-4-3 3-3 4 0 0-3 4-3-4 3-4 3z"/></svg>'
+ rifle:'<i class="emb e1"></i>', gem:'<i class="emb e2"></i>', sword:'<i class="emb e3"></i>',
+ star:'<i class="emb e4"></i>', cube:'<i class="emb e5"></i>', gift:'<i class="emb e6"></i>'
 };
 const GAMES=[
  {n:'PUBG Mobile',icon:'rifle',items:'UC · аккаунты · ранги',price:'от 490 ₸',tint:'#fdf0e4',id:'1'},

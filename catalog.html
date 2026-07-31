@@ -16,6 +16,8 @@ const SUPABASE_URL='https://axtptzceicyhnmnopaaa.supabase.co';
 const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4dHB0emNlaWN5aG5tbm9wYWFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ5NzY0NDAsImV4cCI6MjEwMDU1MjQ0MH0.9YRi27aam540EOqjz_kzwf9bjseMOOCdpydS3-O5b58';
 try{window.sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);}catch(e){window.sb=null;}
 </script>
+<link rel="stylesheet" href="./art.css" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="./art.css"></noscript>
 <style>
 /* ==== АНИМАЦИЯ СТРАНИЦЫ: чернильные круги + карточки-волной ==== */
 .ink-orb{position:fixed;border-radius:50%;pointer-events:none;z-index:0;
@@ -306,13 +308,9 @@ setTimeout(()=>{const sv=localStorage.getItem('tenge_lang');if(sv&&sv!==lang)set
 
 /* иконки */
 const IC={
- rifle:'<svg viewBox="0 0 24 24"><path d="M2 12h14l4-3v6l-4-3M2 12v3h6v-3M8 12V9h8v3M16 9l2-2"/></svg>',
- gem:'<svg viewBox="0 0 24 24"><path d="M6 3h12l4 6-10 12L2 9l4-6zM2 9h20M12 21L8 9l4-6 4 6-4 12"/></svg>',
- sword:'<svg viewBox="0 0 24 24"><path d="M4 20L14 10M14 10l6-6-2-2-6 6M14 10l-2-2M6 18l2 2M4 20l2-2"/></svg>',
- star:'<svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.2 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8L12 2z"/></svg>',
- cube:'<svg viewBox="0 0 24 24"><path d="M12 2l9 5v10l-9 5-9-5V7l9-5zM12 2v10m0 0l9-5m-9 5L3 7m9 15V12"/></svg>',
- gift:'<svg viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M5 12v9h14v-9M12 8v13M12 8s-4 0-4-3 3-3 4 0 0-3 4-3-4 3-4 3z"/></svg>',
- acc:'<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>'
+ rifle:'<i class="emb emb-s e1"></i>', gem:'<i class="emb emb-s e2"></i>', sword:'<i class="emb emb-s e3"></i>',
+ star:'<i class="emb emb-s e4"></i>', cube:'<i class="emb emb-s e5"></i>', gift:'<i class="emb emb-s e6"></i>',
+ acc:'<i class="emb emb-s e1"></i>'
 };
 const DEMO=[];   /* демо-лоты убраны: каталог показывает только реальные listings из Supabase */
 let LOTS=[...JSON.parse(localStorage.getItem('tenge_listings')||'[]').map(l=>({
