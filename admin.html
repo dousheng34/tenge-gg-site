@@ -170,7 +170,7 @@ async function checkAccess(){
   let admin=false;
   try{
     const {data:r}=await sb.from('user_roles').select('role').eq('user_id',data.session.user.id).maybeSingle();
-    admin = !!r && r.role==='admin';
+    admin = !!r && (r.role==='admin' || r.role==='arbiter');   // как в функции is_staff() в базе
   }catch(e){ admin=false; }
   if(admin){
     $('gateW').style.display='none';

@@ -311,16 +311,7 @@ const IC={
  gift:'<svg viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M5 12v9h14v-9M12 8v13M12 8s-4 0-4-3 3-3 4 0 0-3 4-3-4 3-4 3z"/></svg>',
  acc:'<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>'
 };
-const DEMO=[
- {id:1,g:'pubg',c:'donate',ic:'rifle',t:'PUBG Mobile — 660 UC',d:'Мгновенно по Player ID, без входа',p:4400,s:'DarkSide_KZ',on:1,r:4.98,dl:1243,ts:9,tint:'#fdf0e4'},
- {id:2,g:'pubg',c:'accounts',ic:'acc',t:'Аккаунт PUBG · Lvl 68 · Conqueror',d:'120+ скинов, 4 гладиатора',p:38500,s:'Temirlan',on:1,r:4.95,dl:312,ts:7,tint:'#fdf0e4'},
- {id:3,g:'freefire',c:'donate',ic:'gem',t:'Free Fire — 1080 алмазов',d:'Пополнение по ID за 5 минут',p:3900,s:'FF_Shymkent',on:1,r:4.99,dl:2104,ts:10,tint:'#e8f3fb'},
- {id:4,g:'freefire',c:'accounts',ic:'acc',t:'Аккаунт FF · Heroic · 80+ скинов',d:'Редкие бандлы 2021',p:15900,s:'Aida_Games',on:0,r:4.87,dl:96,ts:4,tint:'#e8f3fb'},
- {id:5,g:'mlbb',c:'donate',ic:'sword',t:'MLBB — 565 алмазов',d:'Официально, чек в подарок',p:4200,s:'MLBB_Almaty',on:1,r:4.97,dl:1876,ts:8,tint:'#f0ecfb'},
- {id:6,g:'genshin',c:'accounts',ic:'star',t:'Genshin · AR 58 · 12 лег',d:'Hu Tao C1, Raiden, 40k примо',p:52000,s:'Zhanibek',on:1,r:5.0,dl:54,ts:6,tint:'#e7f6f5'},
- {id:7,g:'roblox',c:'currency',ic:'cube',t:'Robux — 1700 R$',d:'Через Gamepass, безопасно',p:5900,s:'RobuxKZ',on:1,r:4.93,dl:743,ts:5,tint:'#fdedef'},
- {id:8,g:'roblox',c:'donate',ic:'gift',t:'Roblox Premium 2200 · 1 мес',d:'Активация за 10 минут',p:6400,s:'Nurik_Play',on:0,r:4.78,dl:132,ts:3,tint:'#fdedef'},
-];
+const DEMO=[];   /* демо-лоты убраны: каталог показывает только реальные listings из Supabase */
 let LOTS=[...JSON.parse(localStorage.getItem('tenge_listings')||'[]').map(l=>({
   id:l.id,g:l.game,c:l.cat,ic:'gift',t:l.title,d:l.desc,p:l.price,s:l.seller||'Aseka',on:1,r:5,dl:0,ts:l.ts,tint:'#eef7f0',mine:1
 })),...DEMO];
@@ -422,14 +413,19 @@ $('mbg').addEventListener('click',e=>{if(e.target.id==='mbg')closeM()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeM()});
 
 $('mPaid').onclick=async()=>{
-  if(!cur)return;const fee=Math.round(cur.p*.05);
-  const o={id:'TG-'+Math.floor(1000+Math.random()*9000),title:cur.t,seller:cur.s,icon:'🎮',
-    price:cur.p+fee,status:'FUNDS_HOLD',stage:1,ts:Date.now()};
-  const os=JSON.parse(localStorage.getItem('tenge_orders')||'[]');os.unshift(o);
-  localStorage.setItem('tenge_orders',JSON.stringify(os));
-  if(window.sb){try{await sb.from('orders').insert([{listing_id:typeof cur.id==='string'&&cur.id.length>20?cur.id:null,
-    status:'FUNDS_HOLD',escrow_amount:cur.p+fee,fee_amount:fee}]);}catch(e){}}
-  $('mPaid').style.display='none';$('mGo').style.display='block';
+  if(!cur)return;
+  if(!window.sb){alert('База недоступна, попробуй позже');return}
+  const {data:s}=await sb.auth.getSession();
+  if(!s||!s.session){location.href='./auth.html?next=profile';return}   // сделку может открыть только вошедший
+  const btn=$('mPaid'); btn.disabled=true;
+  const {error}=await sb.from('orders').insert([{
+    listing_id:cur.id, buyer_id:s.session.user.id, status:'FUNDS_HOLD',
+    buyer_name:(s.session.user.email||'Покупатель').split('@')[0]
+  }]);
+  btn.disabled=false;
+  if(error){alert('Не удалось создать сделку: '+error.message);return}
+  /* сумму и комиссию проставляет сама база по цене лота — подменить цену из браузера нельзя */
+  btn.style.display='none';$('mGo').style.display='block';
 };
 
 /* общее */

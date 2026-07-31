@@ -172,73 +172,67 @@ header{position:sticky;top:0;z-index:100;background:rgba(253,252,250,.88);backdr
 </div>
 
 <script>
-const urlParams = new URLSearchParams(window.location.search);
-const lotId = urlParams.get('id') || '1';
+const $=id=>document.getElementById(id);
+const kzt=n=>Number(n).toLocaleString('ru-RU')+' \u20b8';
+const GMAP={pubg:'PUBG Mobile',freefire:'Free Fire',mlbb:'Mobile Legends',genshin:'Genshin Impact',roblox:'Roblox',subs:'Подписки'};
+const lotId=new URLSearchParams(location.search).get('id');
+let LOT=null;
 
-const DEMO_ITEMS = {
-  '1': {title:'PUBG Mobile — 660 UC', game:'PUBG Mobile', price:4400, seller:'DarkSide_KZ', rating:'4.98', deals:'1,243', desc:'Официальное пополнение UC по вашему Player ID. Безопасно, без входа на аккаунт. Доставка от 1 до 5 минут после оплаты.'},
-  '2': {title:'Free Fire — 1080 Алмазов', game:'Free Fire', price:3900, seller:'FF_Shymkent', rating:'4.99', deals:'2,104', desc:'Мгновенное зачисление алмазов по Free Fire ID. Самый выгодный курс в КЗ.'},
-  '3': {title:'Mobile Legends — 565 Алмазов', game:'Mobile Legends', price:4200, seller:'MLBB_Almaty', rating:'4.97', deals:'1,876', desc:'Зачисление по User ID + Zone ID. Все чеки предоставляем.'}
+function notFound(msg){
+  document.querySelector('.layout').innerHTML=
+    `<div style="grid-column:1/-1;text-align:center;padding:80px 20px">
+       <div style="font-size:52px;opacity:.15">空</div>
+       <h2 style="margin:14px 0 10px">${msg}</h2>
+       <p style="color:var(--muted);margin-bottom:22px">Возможно, лот уже продан или снят с публикации.</p>
+       <a href="./catalog.html" style="color:var(--red);font-weight:600;text-decoration:none">← Вернуться в каталог</a>
+     </div>`;
+}
+
+(async()=>{
+  if(!lotId || !window.sb){ notFound('Лот не найден'); return; }
+  const {data,error}=await sb.from('listings').select('*').eq('id',lotId).eq('status','active').maybeSingle();
+  if(error||!data){ notFound('Лот не найден'); return; }
+  LOT=data;
+  const fee=Math.round(+LOT.price*0.05);
+  $('iTitle').textContent=LOT.title;
+  $('gBadge').textContent='🎮 '+(GMAP[LOT.game_type]||LOT.game_type||'tenge.gg');
+  $('iDesc').textContent=LOT.description||'Продавец не добавил описание.';
+  $('iPrice').textContent=kzt(LOT.price);
+  document.querySelector('.buy-price-sub').textContent='Комиссия сервиса (5% = '+kzt(fee)+') уже включена';
+  const sname=LOT.seller_name||'Продавец KZ';
+  $('sName').textContent=sname;
+  $('sAva').textContent=sname[0].toUpperCase();
+  $('sRating').textContent=LOT.seller_verified?'✓ Проверен':'— нет оценок';
+  $('sDeals').textContent=LOT.seller_deals||0;
+  document.querySelector('.seller-sub').textContent='Продавец на tenge.gg · с '+new Date(LOT.created_at).toLocaleDateString('ru-RU');
+  $('mLot').textContent=LOT.title;
+  $('mFee').textContent=kzt(fee);
+  $('mTotal').textContent=kzt(LOT.price);
+})();
+
+const modal=$('buyModal');
+$('btnBuy').onclick=()=>{
+  if(!LOT)return;
+  const idVal=$('gameId').value.trim();
+  if(!idVal){ alert('Введи свой Player ID или никнейм'); $('gameId').focus(); return; }
+  $('mId').textContent=idVal;
+  modal.classList.add('open'); modal.style.display='flex';
 };
+$('btnClose').onclick=()=>{ modal.classList.remove('open'); modal.style.display=''; };
 
-const item = DEMO_ITEMS[lotId] || DEMO_ITEMS['1'];
-
-document.getElementById('iTitle').textContent = item.title;
-document.getElementById('gBadge').textContent = '🎮 ' + item.game;
-document.getElementById('iPrice').textContent = item.price.toLocaleString('ru-RU') + ' ₸';
-document.getElementById('sName').textContent = item.seller;
-document.getElementById('sRating').textContent = '★ ' + item.rating;
-document.getElementById('sDeals').textContent = item.deals;
-document.getElementById('sAva').textContent = item.seller[0];
-document.getElementById('iDesc').textContent = item.desc;
-
-const modal = document.getElementById('buyModal');
-const gameIdInput = document.getElementById('gameId');
-
-document.getElementById('btnBuy').onclick = () => {
-  const idVal = gameIdInput.value.trim();
-  if(!idVal) {
-    alert('Пожалуйста, введи твой Player ID или никнейм!');
-    gameIdInput.focus();
-    return;
-  }
-  const fee = Math.round(item.price * 0.05);
-  document.getElementById('mLot').textContent = item.title;
-  document.getElementById('mId').textContent = idVal;
-  document.getElementById('mFee').textContent = fee.toLocaleString('ru-RU') + ' ₸';
-  document.getElementById('mTotal').textContent = (item.price + fee).toLocaleString('ru-RU') + ' ₸';
-  modal.classList.add('open');
-};
-
-document.getElementById('btnClose').onclick = () => modal.classList.remove('open');
-
-document.getElementById('btnConfirm').onclick = async () => {
-  const fee = Math.round(item.price * 0.05);
-  const order = {
-    id: 'TG-' + Math.floor(1000 + Math.random() * 9000),
-    title: item.title,
-    seller: item.seller,
-    price: item.price + fee,
-    status: 'FUNDS_HOLD',
-    stage: 1,
-    ts: Date.now()
-  };
-  const orders = JSON.parse(localStorage.getItem('tenge_orders') || '[]');
-  orders.unshift(order);
-  localStorage.setItem('tenge_orders', JSON.stringify(orders));
-
-  if (window.sb) {
-    try {
-      await sb.from('orders').insert([{
-        status: 'FUNDS_HOLD',
-        escrow_amount: item.price + fee,
-        fee_amount: fee
-      }]);
-    } catch(e) { console.warn(e); }
-  }
-
-  alert('Оплата зафиксирована! Переходим в личный кабинет к сделке.');
-  window.location.href = './profile.html';
+$('btnConfirm').onclick=async()=>{
+  if(!LOT)return;
+  const {data:s}=await sb.auth.getSession();
+  if(!s||!s.session){ location.href='./auth.html?next=profile'; return; }   // сделка только для вошедших
+  const btn=$('btnConfirm'); btn.disabled=true; btn.textContent='Создаём сделку…';
+  /* сумму и комиссию считает сама база по цене лота — из браузера их подменить нельзя */
+  const {error}=await sb.from('orders').insert([{
+    listing_id:LOT.id, buyer_id:s.session.user.id, status:'FUNDS_HOLD',
+    buyer_name:(s.session.user.email||'Покупатель').split('@')[0]
+  }]);
+  if(error){ btn.disabled=false; btn.textContent='✓ Я оплатил через Kaspi'; alert('Не удалось создать сделку: '+error.message); return; }
+  btn.textContent='✓ Сделка создана';
+  setTimeout(()=>location.href='./profile.html',900);
 };
 </script>
 </body>
