@@ -297,9 +297,12 @@ let lang='ru';
 function setLang(l){
   lang=l;$('lRu').classList.toggle('active',l==='ru');$('lKz').classList.toggle('active',l==='kz');
   document.querySelectorAll('[data-i18n]').forEach(e=>{const k=e.dataset.i18n;if(I18N[l][k])e.innerHTML=I18N[l][k]});
+  localStorage.setItem('tenge_lang',l);            // выбор языка запоминается на всех страницах
+  if(window.tengeLang)window.tengeLang.apply(l);   // остальной текст переводит общий движок
   render();
 }
 $('lRu').onclick=()=>setLang('ru');$('lKz').onclick=()=>setLang('kz');
+setTimeout(()=>{const sv=localStorage.getItem('tenge_lang');if(sv&&sv!==lang)setLang(sv)},60);
 
 /* иконки */
 const IC={
@@ -442,5 +445,6 @@ const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.targ
 document.querySelectorAll('.reveal:not(.in)').forEach(e=>io.observe(e));
 render();
 </script>
+<script src="./i18n.js" defer></script>
 </body>
 </html>

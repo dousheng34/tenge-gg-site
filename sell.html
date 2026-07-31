@@ -394,5 +394,6 @@ bg.onclick=()=>{mm.classList.toggle('open');bg.classList.toggle('open')};
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.1});
 document.querySelectorAll('.reveal:not(.in)').forEach(e=>io.observe(e));
 </script>
+<script src="./i18n.js" defer></script>
 </body>
 </html>
