@@ -111,9 +111,9 @@ try{window.sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);}catc
     <div class="sym">⚖️</div>
     <h1>Панель арбитра</h1>
     <p>Доступ только для команды tenge.gg</p>
-    <input type="password" id="pw" placeholder="Пароль арбитра">
-    <button class="btn-hero" style="width:100%;margin-top:14px" onclick="tryIn()"><span>Войти →</span></button>
-    <div class="err" id="err">Неверный пароль</div>
+    <p id="gateState" style="margin-bottom:14px">Проверяем доступ…</p>
+    <button class="btn-hero" style="width:100%;margin-top:6px" id="gateBtn" onclick="location.href='./auth.html?next=admin'"><span>Войти в аккаунт →</span></button>
+    <div class="err" id="err">У этого аккаунта нет роли арбитра. Роль выдаётся в таблице user_roles.</div>
   </div>
 </div>
 
@@ -149,15 +149,40 @@ try{window.sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);}catc
 <script>
 const $=id=>document.getElementById(id);
 const fmt=n=>Number(n).toLocaleString('ru-RU')+' ₸';
-const PASS='tenge2026';
+
 const SM={FUNDS_HOLD:['t-hold','ОПЛАЧЕНО'],DATA_TRANSFERRED:['t-hold','ПЕРЕДАЧА'],
   COMPLETED:['t-done','ЗАВЕРШЕНО'],DISPUTE:['t-disp','СПОР'],REFUNDED:['t-ref','ВОЗВРАТ']};
 
-function tryIn(){
-  if($('pw').value===PASS){$('gateW').style.display='none';$('admW').style.display='block';loadAll()}
-  else $('err').style.display='block';
+/* ===== ДОСТУП ПО РОЛИ В БАЗЕ =====
+   Раньше пароль арбитра лежал строкой в этом файле и был виден любому
+   через «Просмотр кода страницы». Теперь доступ проверяет Postgres:
+   нужна запись role='admin' в public.user_roles + политики RLS.        */
+async function checkAccess(){
+  const st=$('gateState');
+  if(!window.sb){st.textContent='Supabase не подключён';return}
+  const {data}=await sb.auth.getSession();
+  if(!data||!data.session){
+    st.textContent='Панель арбитра доступна только команде tenge.gg. Войди в аккаунт.';
+    return;
+  }
+  st.textContent='Проверяем роль…';
+  $('gateBtn').style.display='none';
+  let admin=false;
+  try{
+    const {data:r}=await sb.from('user_roles').select('role').eq('user_id',data.session.user.id).maybeSingle();
+    admin = !!r && r.role==='admin';
+  }catch(e){ admin=false; }
+  if(admin){
+    $('gateW').style.display='none';
+    $('admW').style.display='block';
+    loadAll();
+  }else{
+    st.textContent='Вход выполнен: '+(data.session.user.email||'')+', но роли арбитра нет.';
+    $('err').style.display='block';
+  }
 }
-$('pw').onkeydown=e=>{if(e.key==='Enter')tryIn()};
+checkAccess();
+if(window.sb)sb.auth.onAuthStateChange(()=>checkAccess());
 
 let DB={orders:[],leads:[],listings:[]},tab='disputes';
 

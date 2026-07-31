@@ -137,8 +137,6 @@ footer{border-top:1px solid var(--line);padding:22px;text-align:center;font-size
 
       <style>
         #gBtn:hover{border-color:#4285F4;color:#4285F4;box-shadow:0 14px 30px rgba(66,133,244,.16)}
-        #tgWidget{display:flex;justify-content:center;margin-top:12px;min-height:46px}
-        #tgWidget iframe{border-radius:100px!important;overflow:hidden}
       </style>
 
       <button class="tg-btn" id="gBtn">
@@ -146,10 +144,7 @@ footer{border-top:1px solid var(--line);padding:22px;text-align:center;font-size
         Войти через Google
       </button>
 
-      <div style="height:12px"></div>
-
-      <div id="tgWidget"></div>
-      <div class="tg-note" id="tgNote">Telegram-вход привяжет аккаунт и включит уведомления о сделках</div>
+      <div class="tg-note">Вход через Telegram временно отключён: виджет не даёт защищённой сессии. Пользуйся почтой или Google.</div>
     </div>
 
     <!-- УЖЕ ВОШЁЛ -->
@@ -221,34 +216,11 @@ $('gBtn').onclick=async()=>{
   if(error)alert('Google: '+error.message+'\n\nВключи провайдер Google в Supabase → Authentication → Providers.');
 };
 
-/* ===== TELEGRAM LOGIN WIDGET ===== */
-const TG_BOT='startupi_bot';
-(function(){
-  const s=document.createElement('script');
-  s.async=true;
-  s.src='https://telegram.org/js/telegram-widget.js?22';
-  s.setAttribute('data-telegram-login',TG_BOT);
-  s.setAttribute('data-size','large');
-  s.setAttribute('data-radius','20');
-  s.setAttribute('data-userpic','false');
-  s.setAttribute('data-request-access','write');
-  s.setAttribute('data-onauth','onTelegramAuth(user)');
-  $('tgWidget').appendChild(s);
-})();
-
-window.onTelegramAuth=async function(user){
-  const tg='@'+(user.username||user.id);
-  const name=[user.first_name,user.last_name].filter(Boolean).join(' ');
-  localStorage.setItem('tenge_tg',tg);
-  localStorage.setItem('tenge_tg_id',user.id);
-  localStorage.setItem('tenge_user',name||tg);
-  if(window.sb){
-    try{await sb.from('early_leads').insert([{contact:tg+' (id:'+user.id+')',role:'buyer'}]);}catch(e){}
-  }
-  $('tgNote').innerHTML='✓ Вход выполнен: <b>'+(name||tg)+'</b>. Переходим в кабинет...';
-  $('tgNote').style.color='#1a7f4b';
-  setTimeout(()=>location.href='./profile.html',1200);
-};
+/* Telegram-вход удалён: виджет подтверждал личность только на стороне браузера,
+   подпись (hash) не проверялась, сессия Supabase не выдавалась — вход подделывался
+   одной строкой в консоли. Вернём его через Edge Function с проверкой HMAC. */
+localStorage.removeItem('tenge_tg');
+localStorage.removeItem('tenge_tg_id');
 
 /* выход */
 $('outBtn').onclick=async()=>{await sb.auth.signOut();render()};
@@ -265,13 +237,14 @@ async function render(){
     $('sMail').textContent=mail;
     $('sAva').textContent=(mail[0]||'A').toUpperCase();
     localStorage.setItem('tenge_user',mail);
+    const next=new URLSearchParams(location.search).get('next');
+    if(next==='profile')setTimeout(()=>location.replace('./profile.html'),600);
+    if(next==='admin')setTimeout(()=>location.replace('./admin.html'),600);
   }else{
     $('authBox').style.display='block';
     $('sessBox').classList.remove('on');
     localStorage.removeItem('tenge_user');
   }
-  const tg=localStorage.getItem('tenge_tg');
-  if(tg)$('tgNote').innerHTML='Telegram <b>'+tg+'</b> уже привязан';
 }
 if(window.sb)sb.auth.onAuthStateChange(()=>render());
 render();

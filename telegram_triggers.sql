@@ -1,6 +1,11 @@
 -- ============================================================
 -- tenge.gg — Telegram-уведомления через Database Webhooks
 -- Запустить в Supabase SQL Editor, подставив 2 переменные ниже.
+--
+-- ВНИМАНИЕ: старый токен бота лежал в этом файле открытым текстом и попал в
+-- историю git публичного репозитория. Он считается скомпрометированным.
+-- Отзови его: @BotFather -> /revoke -> получи новый и подставь ниже.
+-- Новый токен НИКОГДА не коммить: вставляй значение только в SQL Editor.
 -- ============================================================
 
 -- 1. Расширение для HTTP-запросов из Postgres
@@ -14,8 +19,8 @@ create table if not exists app_settings (
 );
 
 insert into app_settings (key, value) values
-  ('telegram_bot_token', '8420205890:AAGMjj8W0Qyr_vFwmBSHeFd0P-xnW4ySB0Y'),
-  ('telegram_chat_id',   '6462720255')
+  ('telegram_bot_token', 'ВСТАВЬ_НОВЫЙ_ТОКЕН_БОТА'),
+  ('telegram_chat_id',   'ВСТАВЬ_CHAT_ID')
 on conflict (key) do update set value = excluded.value;
 
 -- 3. Универсальная функция отправки в Telegram

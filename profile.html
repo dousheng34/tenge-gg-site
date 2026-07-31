@@ -261,17 +261,25 @@ const $=id=>document.getElementById(id);
 const fmt=n=>Number(n).toLocaleString('ru-RU')+' ₸';
 const now=()=>new Date().toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'});
 
-/* пользователь */
-const uname=localStorage.getItem('tenge_user');
-if(uname){$('uname').innerHTML=uname+' <span class="badge-f">ОСНОВАТЕЛЬ · 0% МЕСЯЦ</span>';$('uav').textContent=uname[0].toUpperCase()}
+/* ===== ГЕЙТ ДОСТУПА: без сессии Supabase кабинет не открывается ===== */
+document.documentElement.style.visibility='hidden';
+let ME=null;
+(async()=>{
+  if(!window.sb){location.replace('./auth.html?next=profile');return}
+  const {data}=await sb.auth.getSession();
+  if(!data||!data.session){location.replace('./auth.html?next=profile');return}
+  ME=data.session.user;
+  const mail=ME.email||'Пользователь';
+  $('uname').innerHTML=mail+' <span class="badge-f">ОСНОВАТЕЛЬ · 0% МЕСЯЦ</span>';
+  $('uav').textContent=mail[0].toUpperCase();
+  document.documentElement.style.visibility='';
+  loadMyOrders();
+})();
+sb&&sb.auth.onAuthStateChange((e)=>{ if(e==='SIGNED_OUT') location.replace('./auth.html'); });
 
 /* данные */
-if(!localStorage.getItem('tenge_orders')){
-  localStorage.setItem('tenge_orders',JSON.stringify([
-   {id:'TG-1042',icon:'🔫',title:'PUBG Mobile — 660 UC',seller:'DarkSide_KZ',price:4620,status:'DATA_TRANSFERRED',stage:2,ts:Date.now()-3.6e6},
-   {id:'TG-1038',icon:'💎',title:'Free Fire — 1080 алмазов',seller:'FF_Shymkent',price:4095,status:'COMPLETED',stage:3,ts:Date.now()-8.6e7}]));
-}
-const ORDERS=JSON.parse(localStorage.getItem('tenge_orders')||'[]');
+/* демо-сделки удалены: показываем только реальные заказы из Supabase */
+const ORDERS=JSON.parse(localStorage.getItem('tenge_orders')||'[]');  // локальный кэш, перезаписывается данными из БД
 const MYLOTS=JSON.parse(localStorage.getItem('tenge_listings')||'[]');
 const SM={FUNDS_HOLD:['t-hold','ОПЛАЧЕНО'],DATA_TRANSFERRED:['t-wait','ПРОВЕРКА 24Ч'],
   COMPLETED:['t-done','ЗАВЕРШЕНО'],DISPUTE:['t-disp','СПОР'],REFUNDED:['t-wait','ВОЗВРАТ']};
@@ -327,6 +335,25 @@ function render(t){
   $('content').innerHTML=h;
   setTimeout(()=>document.querySelectorAll('#content .reveal').forEach(e=>e.classList.add('in')),40);
 }
+/* ===== РЕАЛЬНЫЕ СДЕЛКИ ПОЛЬЗОВАТЕЛЯ ИЗ SUPABASE ===== */
+async function loadMyOrders(){
+  if(!window.sb||!ME)return;
+  try{
+    const {data}=await sb.from('orders').select('*')
+      .eq('buyer_id',ME.id).order('created_at',{ascending:false});
+    if(!data)return;
+    const mapped=data.map(o=>({
+      id:o.id, icon:'🎮', title:o.listing_title||'Сделка',
+      seller:o.seller_name||'Продавец', price:+o.escrow_amount||0,
+      status:o.status||'FUNDS_HOLD',
+      stage:({FUNDS_HOLD:1,DATA_TRANSFERRED:2,COMPLETED:3,DISPUTE:2,REFUNDED:3})[o.status]||1,
+      ts:new Date(o.created_at).getTime()
+    }));
+    ORDERS.length=0; mapped.forEach(m=>ORDERS.push(m));
+    render(document.querySelector('.pill.active')?.dataset.t||'buys');
+  }catch(e){}
+}
+
 document.querySelectorAll('.pill').forEach(p=>p.onclick=()=>{
   document.querySelectorAll('.pill').forEach(x=>x.classList.remove('active'));
   p.classList.add('active');render(p.dataset.t)});
