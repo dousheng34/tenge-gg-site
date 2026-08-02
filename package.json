@@ -1,0 +1,36 @@
+{
+  "name": "tenge-gg-escrow",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Escrow state machine для игрового маркетплейса tenge.gg (Next.js + Supabase + Kaspi QR)",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "db:types": "supabase gen types typescript --project-id axtptzceicyhnmnopaaa > src/types/database.types.ts",
+    "db:push": "supabase db push",
+    "db:test": "psql \"$SUPABASE_DB_URL\" -f supabase/tests/escrow_state_machine_test.sql"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^5.7.1",
+    "@supabase/ssr": "^0.5.2",
+    "@supabase/supabase-js": "^2.45.4",
+    "clsx": "^2.1.1",
+    "framer-motion": "^11.18.2",
+    "next": "^15.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-hook-form": "^7.84.0",
+    "server-only": "^0.0.1",
+    "tailwind-merge": "^3.6.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.7.4",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "tailwindcss": "^3.4.13",
+    "typescript": "^5.6.2"
+  }
+}
