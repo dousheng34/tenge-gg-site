@@ -8,7 +8,7 @@ import { kaspiWebhookSchema, toMinorUnits, type KaspiWebhookPayload } from '@/li
 import { verifyKaspiSignature } from '@/lib/kaspi/signature';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { createUserClient } from '@/lib/supabase/server';
-import type { Database } from '@/types/database.types';
+import type { Database, Json } from '@/types/database.types';
 
 type DbClient = SupabaseClient<Database>;
 
@@ -123,8 +123,8 @@ export class EscrowService {
       p_order_id: payload.orderId,
       p_payment_id: payload.paymentId,
       p_amount_minor: toMinorUnits(payload.amount),
-      p_raw: payload as unknown as Record<string, unknown>,
-      p_signature: signatureHeader,
+      p_raw: payload as unknown as Json,
+      p_signature: signatureHeader ?? undefined,
     });
 
     if (error) {
