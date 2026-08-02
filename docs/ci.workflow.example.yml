@@ -1,0 +1,41 @@
+# CI для tenge.gg
+#
+# Скопируйте этот файл в .github/workflows/ci.yml вручную:
+# токен интеграции не имеет scope `workflow` и не может писать в .github/workflows/.
+
+name: CI
+
+on:
+  push: { branches: [main] }
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci --no-audit --no-fund
+
+      - name: Types
+        run: npm run typecheck
+
+      - name: Build
+        run: npm run build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: https://axtptzceicyhnmnopaaa.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+
+      # Бюджет клиентского JS: PR, который его превышает, не мержится.
+      - name: JS budget (300 KB на маршрут)
+        run: |
+          BIG=$(find .next/static/chunks -name '*.js' -size +300k | head -5)
+          if [ -n "$BIG" ]; then echo "Превышен бюджет:"; echo "$BIG"; exit 1; fi
