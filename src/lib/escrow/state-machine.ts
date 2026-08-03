@@ -103,3 +103,16 @@ export const STATUS_LABELS_RU: Readonly<Record<OrderStatus, string>> = Object.fr
   CANCELLED: 'Отменён',
   EXPIRED: 'Просрочен',
 });
+
+/** Статусы БД включают DEPRECATED-алиасы легаси-фронтенда. */
+export type DbOrderStatus = OrderStatus | 'FUNDS_HOLD' | 'DATA_TRANSFERRED';
+
+const LEGACY: Record<string, OrderStatus> = {
+  FUNDS_HOLD: 'ESCROW_HOLD',
+  DATA_TRANSFERRED: 'VERIFYING',
+};
+
+/** Приводит значение из БД к каноническому статусу стейт-машины. */
+export function normalizeStatus(status: DbOrderStatus | string): OrderStatus {
+  return LEGACY[status] ?? ((ORDER_STATUSES as readonly string[]).includes(status) ? (status as OrderStatus) : 'CREATED');
+}
