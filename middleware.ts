@@ -25,7 +25,7 @@ export async function middleware(request: NextRequest) {
 
   // Приватные разделы: без сессии — на /auth с возвратом назад
   const path = request.nextUrl.pathname;
-  const isPrivate = ['/orders', '/sell', '/arbitration'].some((p) => path.startsWith(p));
+  const isPrivate = ['/orders', '/sell', '/arbitration', '/profile', '/admin'].some((p) => path.startsWith(p));
 
   if (isPrivate && !data.user) {
     const url = request.nextUrl.clone();
