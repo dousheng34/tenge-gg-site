@@ -2,6 +2,7 @@ import Link from 'next/link';
 
 import { CommandPalette } from './CommandPalette';
 import { ThemeToggle } from './ThemeToggle';
+import { isStaff } from '@/lib/admin.queries';
 import { getCurrentUser } from '@/lib/queries';
 
 const LINKS = [
@@ -12,6 +13,8 @@ const LINKS = [
 
 export async function Header() {
   const user = await getCurrentUser();
+  const staff = user ? await isStaff() : false;
+  const links = staff ? [...LINKS, { href: '/admin', label: 'Панель' }] : LINKS;
 
   return (
     <header className="sticky top-0 z-50 border-b border-neutral-200 bg-[rgb(var(--bg))]/85 backdrop-blur dark:border-neutral-800">
@@ -21,7 +24,7 @@ export async function Header() {
         </Link>
 
         <nav aria-label="Основная навигация" className="hidden items-center gap-1 sm:flex">
-          {LINKS.map((l) => (
+          {links.map((l) => (
             <Link
               key={l.href}
               href={l.href}
@@ -37,9 +40,9 @@ export async function Header() {
           <ThemeToggle />
           {user ? (
             <Link
-              href="/orders"
+              href="/profile"
               className="grid size-8 place-items-center rounded-full bg-neutral-900 text-[11px] font-medium text-white dark:bg-neutral-100 dark:text-neutral-900"
-              aria-label="Личный кабинет"
+              aria-label="Профиль"
               title={user.email ?? 'Профиль'}
             >
               {(user.email?.[0] ?? 'U').toUpperCase()}
