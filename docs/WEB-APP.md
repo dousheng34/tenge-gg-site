@@ -26,6 +26,8 @@ npm run build                # прод-сборка
 | `/orders` | «мои сделки» (покупки и продажи) | по сессии |
 | `/orders/[id]` | комната сделки: escrow-таймлайн с countdown, действия, realtime-чат | участники сделки |
 | `/sell` | публикация лота (Server Action + zod) | по сессии |
+| `/profile` | профиль продавца: ник и город, мои лоты (снять/вернуть/удалить), отзывы обо мне, отзыв по завершённой покупке | по сессии |
+| `/admin` | панель сотрудника: метрики, модерация каталога, ранние заявки, сделки только на чтение | роль `admin`/`arbiter` (`is_staff()`) |
 | `/arbitration` | очередь споров | роль `arbiter` |
 | `/ui-kit` | playground UI-кита | dev |
 | `/api/webhooks/kaspi` | вебхук оплаты Kaspi QR (HMAC-подпись) | service-role |
@@ -37,7 +39,9 @@ npm run build                # прод-сборка
 ## Слои
 
 - `src/lib/queries.ts` — чтение данных для RSC (лоты, сделки, сообщения).
-- `src/app/actions/*` — мутации через Server Actions (`listings`, `orders`).
+- `src/lib/profile.queries.ts` — профиль: свои лоты, отзывы обо мне, сделки без отзыва, статистика.
+- `src/lib/admin.queries.ts` — панель: `is_staff()`, метрики, каталог, заявки.
+- `src/app/actions/*` — мутации через Server Actions (`listings`, `orders`, `profile`, `admin`).
 - `src/services/escrow.service.ts` + `src/lib/escrow/state-machine.ts` — переходы escrow,
   включая нормализацию legacy-статусов из старого HTML-фронта.
 - `src/lib/supabase/{browser,server,admin}.ts` — клиенты: браузерный синглтон, серверный под RLS,
@@ -55,7 +59,8 @@ CSP и security-заголовки задаются в `next.config.ts` (для 
 - [x] каркас, лендинг, каталог, карточка лота, вход
 - [x] сделки, комната сделки, escrow-таймлайн, чат, арбитраж, продажа лота
 - [x] typecheck и `next build` проходят (зафиксировано в этой ветке)
+- [x] профиль (`/profile`) и панель сотрудника (`/admin`) перенесены с legacy HTML
 - [ ] `.github/workflows/ci.yml` — скопировать из `docs/ci.workflow.example.yml` вручную
       (токен интеграции не имеет scope `workflow`)
 - [ ] закоммитить `package-lock.json` и вернуть в CI `npm ci`
-- [ ] удалить legacy HTML-страницы после переноса профиля и админки
+- [ ] удалить legacy HTML-страницы после деплоя Next.js (сейчас статику отдаёт GitHub Pages)
