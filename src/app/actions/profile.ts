@@ -3,6 +3,9 @@
 import { revalidatePath } from 'next/cache';
 
 import { createUserClient } from '@/lib/supabase/server';
+import { describeFindings, scanForContactLeaks } from '@/lib/security/contact-leak';
+import { enforceRateLimit } from '@/lib/security/rate-limit';
+import { normalizeUserText } from '@/lib/security/text';
 import {
   isListingStatus,
   reviewSchema,
@@ -23,7 +26,10 @@ export async function updateSellerProfileAction(input: {
   nickname: string;
   city?: string;
 }): Promise<ProfileActionState> {
-  const parsed = sellerProfileSchema.safeParse(input);
+  const parsed = sellerProfileSchema.safeParse({
+    nickname: normalizeUserText(input.nickname, { maxLength: 24 }),
+    city: input.city === undefined ? undefined : normalizeUserText(input.city, { maxLength: 40 }),
+  });
   if (!parsed.success) {
     return { ok: false, error: 'VALIDATION_FAILED', message: parsed.error.issues[0]?.message ?? 'Проверьте поля' };
   }
@@ -31,6 +37,9 @@ export async function updateSellerProfileAction(input: {
   const supabase = await createUserClient();
   const { data: auth } = await supabase.auth.getUser();
   if (!auth.user) return UNAUTH;
+
+  const limit = await enforceRateLimit(supabase, 'profile_update');
+  if (!limit.allowed) return { ok: false, error: 'RATE_LIMITED', message: limit.message };
 
   const { error } = await supabase.from('sellers').upsert(
     {
@@ -88,14 +97,30 @@ export async function submitReviewAction(input: {
   rating: number;
   text: string;
 }): Promise<ProfileActionState> {
-  const parsed = reviewSchema.safeParse(input);
+  const parsed = reviewSchema.safeParse({
+    ...input,
+    text: normalizeUserText(input.text, { maxLength: 1000, allowNewlines: true }),
+  });
   if (!parsed.success) {
     return { ok: false, error: 'VALIDATION_FAILED', message: parsed.error.issues[0]?.message ?? 'Проверьте поля' };
+  }
+
+  // Отзыв публичный, поэтому контакты в нём — это реклама «пишите мне напрямую»: отклоняем.
+  const scan = scanForContactLeaks(parsed.data.text);
+  if (scan.findings.length > 0) {
+    return {
+      ok: false,
+      error: 'CONTACT_LEAK',
+      message: `Уберите из отзыва: ${describeFindings(scan.findings)}.`,
+    };
   }
 
   const supabase = await createUserClient();
   const { data: auth } = await supabase.auth.getUser();
   if (!auth.user) return UNAUTH;
+
+  const limit = await enforceRateLimit(supabase, 'review_create');
+  if (!limit.allowed) return { ok: false, error: 'RATE_LIMITED', message: limit.message };
 
   const { data: order } = await supabase
     .from('orders')

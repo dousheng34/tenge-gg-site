@@ -4,6 +4,7 @@ import { useEffect, useOptimistic, useRef, useState, useTransition } from 'react
 import { useRouter } from 'next/navigation';
 
 import { cn } from '@/lib/cn';
+import { useToast } from '@/components/ui/toast';
 import { getBrowserClient } from '@/lib/supabase/browser';
 import { sendTradeMessageAction } from '@/app/actions/listings';
 
@@ -18,9 +19,13 @@ export interface ChatMessage {
  * Чат сделки. Сообщения приходят через Realtime, отправка — Server Action
  * с оптимистичным добавлением. Текст рендерится как текстовый узел (не HTML),
  * плюс на стороне БД работает sanitize-триггер.
+ *
+ * Контакты и платёжные реквизиты фильтруются на сервере (см. lib/security/contact-leak):
+ * клиентская проверка здесь сознательно не дублируется — её обошли бы через прямой вызов action.
  */
 export function DealChat({ orderId, me, initial }: { orderId: string; me: string; initial: ChatMessage[] }) {
   const router = useRouter();
+  const toast = useToast();
   const [messages, setMessages] = useState<ChatMessage[]>(initial);
   const [optimistic, addOptimistic] = useOptimistic(messages, (state, body: string) => [
     ...state,
@@ -57,7 +62,21 @@ export function DealChat({ orderId, me, initial }: { orderId: string; me: string
     startTransition(async () => {
       addOptimistic(text);
       const res = await sendTradeMessageAction(orderId, text);
-      if (!res.ok) setDraft(text);
+
+      if (!res.ok) {
+        // Возвращаем текст в поле: сообщение не сохранено, терять его нельзя.
+        setDraft(text);
+        toast.error('Сообщение не отправлено', { description: res.message });
+        return;
+      }
+
+      if (res.masked) {
+        toast.info('Контакты скрыты', {
+          description: `Скрыто: ${res.warning}. Сделка вне сайта не защищена escrow — вернуть деньги будет нечем.`,
+          duration: 8000,
+        });
+      }
+
       router.refresh();
     });
   };

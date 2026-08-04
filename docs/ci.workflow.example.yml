@@ -31,6 +31,9 @@ jobs:
       - name: Types
         run: npm run typecheck
 
+      - name: Security selftest (анти-байпас фильтр)
+        run: npm run test:security
+
       - name: Build
         run: npm run build
         env:

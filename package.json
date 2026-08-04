@@ -8,6 +8,7 @@
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
+    "test:security": "node scripts/security.selftest.mjs",
     "db:types": "supabase gen types typescript --project-id axtptzceicyhnmnopaaa > src/types/database.types.ts",
     "db:push": "supabase db push",
     "db:test": "psql \"$SUPABASE_DB_URL\" -f supabase/tests/escrow_state_machine_test.sql"
