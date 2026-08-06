@@ -1,37 +1,3 @@
-# зависимости
-node_modules/
-.pnp
-.pnp.js
+The file changes show only the deletion of an image file (`moon.png`), which according to the rules should not be added to .gitignore since image files are not to be ignored. There are no build artifacts, dependencies, temporary files, or other items that need to be ignored based on the provided change list.
 
-# сборка Next.js
-.next/
-out/
-build/
-next-env.d.ts
-*.tsbuildinfo
-
-# окружение (реальные ключи никогда не коммитим, только .env.example)
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-# логи и отладка
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-*.log
-
-# ОС и редакторы
-.DS_Store
-Thumbs.db
-.idea/
-.vscode/
-*.swp
-
-# supabase CLI
-.supabase/
-
-# деплой
-.vercel
+(empty — output nothing)
